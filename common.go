@@ -208,11 +208,11 @@ func printComplex(w io.Writer, c complex128, floatPrecision int) {
 
 // hexDump is a modified 'hexdump -C'-like that returns a commented Go syntax
 // byte slice or array.
-func hexDump(w io.Writer, data []byte, indent string) {
-	var comment [16]byte
+func hexDump(w io.Writer, data []byte, indent string, width int) {
+	comment := make([]byte, width)
 
 	for i, v := range data {
-		if i%16 == 0 {
+		if i%width == 0 {
 			fmt.Fprint(w, indent)
 		}
 
@@ -220,12 +220,12 @@ func hexDump(w io.Writer, data []byte, indent string) {
 		if v < 32 || v > 126 {
 			v = '.'
 		}
-		comment[i%16] = v
+		comment[i%width] = v
 
-		if i%16 == 15 {
+		if i%width == width-1 {
 			fmt.Fprintf(w, "// |%s|\n", comment[:])
 		} else if i == len(data)-1 {
-			fmt.Fprintf(w, "// |%s|\n", comment[:len(data)%16])
+			fmt.Fprintf(w, "// |%s|\n", comment[:len(data)%width])
 		}
 	}
 }

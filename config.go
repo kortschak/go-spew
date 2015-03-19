@@ -40,6 +40,10 @@ type ConfigState struct {
 	// set this to a tab with "\t" or perhaps two spaces with "  ".
 	Indent string
 
+	// BytesWidth specifies the number of byte columns to use when dumping a
+	// byte slice or array.
+	BytesWidth int
+
 	// SortKeys specifies map keys should be sorted before being printed. Use
 	// this to have a more deterministic, diffable output.  Note that only
 	// native types (bool, int, uint, floats, uintptr and string) are supported
@@ -50,7 +54,7 @@ type ConfigState struct {
 
 // Config is the active configuration of the top-level functions.
 // The configuration can be changed by modifying the contents of utter.Config.
-var Config = ConfigState{Indent: " "}
+var Config = ConfigState{Indent: " ", BytesWidth: 16}
 
 // Fdump formats and displays the passed arguments to io.Writer w.  It formats
 // exactly the same as Dump.
@@ -91,11 +95,8 @@ func (c *ConfigState) Sdump(a ...interface{}) string {
 // NewDefaultConfig returns a ConfigState with the following default settings.
 //
 // 	Indent: " "
-// 	MaxDepth: 0
-// 	DisableMethods: false
-// 	DisablePointerMethods: false
-// 	ContinueOnMethod: false
+// 	BytesWidth: 16
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
-	return &ConfigState{Indent: " "}
+	return &ConfigState{Indent: " ", BytesWidth: 16}
 }
