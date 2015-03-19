@@ -148,6 +148,7 @@ var (
 	ampersandBytes        = []byte("&")
 	colonBytes            = []byte(":")
 	colonSpaceBytes       = []byte(": ")
+	spaceBytes            = []byte(" ")
 	openParenBytes        = []byte("(")
 	closeParenBytes       = []byte(")")
 	pointerChainBytes     = []byte("->")
@@ -208,24 +209,37 @@ func printComplex(w io.Writer, c complex128, floatPrecision int) {
 
 // hexDump is a modified 'hexdump -C'-like that returns a commented Go syntax
 // byte slice or array.
-func hexDump(w io.Writer, data []byte, indent string, width int) {
-	comment := make([]byte, width)
+func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
+	var commentBytes []byte
+	if comment {
+		commentBytes = make([]byte, width)
+	}
 
 	for i, v := range data {
 		if i%width == 0 {
 			fmt.Fprint(w, indent)
+		} else {
+			w.Write(spaceBytes)
 		}
 
-		fmt.Fprintf(w, "%#2x, ", v)
-		if v < 32 || v > 126 {
-			v = '.'
+		fmt.Fprintf(w, "%#2x,", v)
+		if comment {
+			if v < 32 || v > 126 {
+				v = '.'
+			}
+			commentBytes[i%width] = v
 		}
-		comment[i%width] = v
 
+		if !comment {
+			if i%width == width-1 || i == len(data)-1 {
+				fmt.Fprintln(w)
+			}
+			continue
+		}
 		if i%width == width-1 {
-			fmt.Fprintf(w, "// |%s|\n", comment[:])
+			fmt.Fprintf(w, " // |%s|\n", commentBytes[:])
 		} else if i == len(data)-1 {
-			fmt.Fprintf(w, "// |%s|\n", comment[:len(data)%width])
+			fmt.Fprintf(w, " // |%s|\n", commentBytes[:len(data)%width])
 		}
 	}
 }

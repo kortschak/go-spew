@@ -83,6 +83,13 @@ options. See the ConfigState documentation for more details.
 	String to use for each indentation level for Dump functions.
 	It is a single space by default.  A popular alternative is "\t".
 
+* BytesWidth
+	Number of byte columns to use when dumping byte slices and arrays.
+
+* CommentBytes
+	Specifies whether ASCII comment annotations are attached to byte
+	slice and array dumps.
+
 * SortKeys
 	Specifies map keys should be sorted before being printed. Use
 	this to have a more deterministic, diffable output.  Note that

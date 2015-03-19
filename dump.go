@@ -208,7 +208,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	// Hexdump the entire slice as needed.
 	if doHexDump {
 		indent := strings.Repeat(d.cs.Indent, d.depth)
-		hexDump(d.w, buf, indent, d.cs.BytesWidth)
+		hexDump(d.w, buf, indent, d.cs.BytesWidth, d.cs.CommentBytes)
 		return
 	}
 

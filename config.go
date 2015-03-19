@@ -44,6 +44,10 @@ type ConfigState struct {
 	// byte slice or array.
 	BytesWidth int
 
+	// CommentBytes specifies whether byte slice or array dumps have ASCII
+	// comment annotations.
+	CommentBytes bool
+
 	// SortKeys specifies map keys should be sorted before being printed. Use
 	// this to have a more deterministic, diffable output.  Note that only
 	// native types (bool, int, uint, floats, uintptr and string) are supported
@@ -54,7 +58,7 @@ type ConfigState struct {
 
 // Config is the active configuration of the top-level functions.
 // The configuration can be changed by modifying the contents of utter.Config.
-var Config = ConfigState{Indent: " ", BytesWidth: 16}
+var Config = ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}
 
 // Fdump formats and displays the passed arguments to io.Writer w.  It formats
 // exactly the same as Dump.
@@ -96,7 +100,8 @@ func (c *ConfigState) Sdump(a ...interface{}) string {
 //
 // 	Indent: " "
 // 	BytesWidth: 16
+// 	CommentBytes: true
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
-	return &ConfigState{Indent: " ", BytesWidth: 16}
+	return &ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}
 }
