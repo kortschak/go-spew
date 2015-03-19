@@ -17,6 +17,7 @@
 package utter
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"reflect"
@@ -228,6 +229,7 @@ func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
 		if i%width == width-1 {
 			fmt.Fprintf(w, " // |%s|\n", commentBytes[:])
 		} else if i == len(data)-1 {
+			w.Write(bytes.Repeat([]byte("      "), width-i%width-1))
 			fmt.Fprintf(w, " // |%s|\n", commentBytes[:len(data)%width])
 		}
 	}
