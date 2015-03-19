@@ -98,7 +98,7 @@ func TestAddedReflectValue(t *testing.T) {
 	d := dumpState{w: buf, cs: &Config}
 	d.dump(v)
 	s := buf.String()
-	want := "(int8) 5"
+	want := "int8(5)"
 	if s != want {
 		t.Errorf("TestAddedReflectValue #%d\n got: %s want: %s", i, s, want)
 	}
@@ -109,7 +109,7 @@ func TestAddedReflectValue(t *testing.T) {
 	buf.Reset()
 	d.dump(v)
 	s = buf.String()
-	want = "(int8) <int8 Value>"
+	want = "int8(<int8 Value>)"
 	if s != want {
 		t.Errorf("TestAddedReflectValue #%d\n got: %s want: %s", i, s, want)
 	}

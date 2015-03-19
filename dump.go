@@ -18,7 +18,6 @@ package utter
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -123,28 +122,15 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	}
 
 	// Display type information.
-	d.w.Write(openParenBytes)
-	d.w.Write(bytes.Repeat(asteriskBytes, indirects))
+	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
 	d.w.Write([]byte(ve.Type().String()))
-	d.w.Write(closeParenBytes)
-
-	// Display pointer information.
-	if len(pointerChain) > 0 {
-		d.w.Write(openParenBytes)
-		for i, addr := range pointerChain {
-			if i > 0 {
-				d.w.Write(pointerChainBytes)
-			}
-			printHexPtr(d.w, addr)
-		}
-		d.w.Write(closeParenBytes)
-	}
 
 	// Display dereferenced value.
-	d.w.Write(openParenBytes)
 	switch {
 	case nilFound == true:
-		d.w.Write(nilAngleBytes)
+		d.w.Write(openParenBytes)
+		d.w.Write(nilBytes)
+		d.w.Write(closeParenBytes)
 
 	case cycleFound == true:
 		d.w.Write(circularBytes)
@@ -153,7 +139,6 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		d.ignoreNextType = true
 		d.dump(ve)
 	}
-	d.w.Write(closeParenBytes)
 }
 
 // dumpSlice handles formatting of arrays and slices.  Byte (uint8 under
@@ -223,21 +208,14 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	// Hexdump the entire slice as needed.
 	if doHexDump {
 		indent := strings.Repeat(d.cs.Indent, d.depth)
-		str := indent + hex.Dump(buf)
-		str = strings.Replace(str, "\n", "\n"+indent, -1)
-		str = strings.TrimRight(str, d.cs.Indent)
-		d.w.Write([]byte(str))
+		hexDump(d.w, buf, indent)
 		return
 	}
 
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
 		d.dump(d.unpackValue(v.Index(i)))
-		if i < (numEntries - 1) {
-			d.w.Write(commaNewlineBytes)
-		} else {
-			d.w.Write(newlineBytes)
-		}
+		d.w.Write(commaNewlineBytes)
 	}
 }
 
@@ -263,39 +241,15 @@ func (d *dumpState) dump(v reflect.Value) {
 	// Print type information unless already handled elsewhere.
 	if !d.ignoreNextType {
 		d.indent()
-		d.w.Write(openParenBytes)
 		d.w.Write([]byte(v.Type().String()))
-		d.w.Write(closeParenBytes)
-		d.w.Write(spaceBytes)
 	}
 	d.ignoreNextType = false
 
-	// Display length and capacity if the built-in len and cap functions
-	// work with the value's kind and the len/cap itself is non-zero.
-	valueLen, valueCap := 0, 0
-	switch v.Kind() {
-	case reflect.Array, reflect.Slice, reflect.Chan:
-		valueLen, valueCap = v.Len(), v.Cap()
-	case reflect.Map, reflect.String:
-		valueLen = v.Len()
-	}
-	if valueLen != 0 || valueCap != 0 {
+	switch kind {
+	case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
+	default:
 		d.w.Write(openParenBytes)
-		if valueLen != 0 {
-			d.w.Write(lenEqualsBytes)
-			printInt(d.w, int64(valueLen), 10)
-		}
-		if valueCap != 0 {
-			if valueLen != 0 {
-				d.w.Write(spaceBytes)
-			}
-			d.w.Write(capEqualsBytes)
-			printInt(d.w, int64(valueCap), 10)
-		}
-		d.w.Write(closeParenBytes)
-		d.w.Write(spaceBytes)
 	}
-
 	switch kind {
 	case reflect.Invalid:
 		// Do nothing.  We should never get here since invalid has already
@@ -324,7 +278,9 @@ func (d *dumpState) dump(v reflect.Value) {
 
 	case reflect.Slice:
 		if v.IsNil() {
-			d.w.Write(nilAngleBytes)
+			d.w.Write(openParenBytes)
+			d.w.Write(nilBytes)
+			d.w.Write(closeParenBytes)
 			break
 		}
 		fallthrough
@@ -344,7 +300,7 @@ func (d *dumpState) dump(v reflect.Value) {
 		// The only time we should get here is for nil interfaces due to
 		// unpackValue calls.
 		if v.IsNil() {
-			d.w.Write(nilAngleBytes)
+			d.w.Write(nilBytes)
 		}
 
 	case reflect.Ptr:
@@ -354,27 +310,24 @@ func (d *dumpState) dump(v reflect.Value) {
 	case reflect.Map:
 		// nil maps should be indicated as different than empty maps
 		if v.IsNil() {
-			d.w.Write(nilAngleBytes)
+			d.w.Write(openParenBytes)
+			d.w.Write(nilBytes)
+			d.w.Write(closeParenBytes)
 			break
 		}
 
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
-		numEntries := v.Len()
 		keys := v.MapKeys()
 		if d.cs.SortKeys {
 			sortValues(keys)
 		}
-		for i, key := range keys {
+		for _, key := range keys {
 			d.dump(d.unpackValue(key))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
 			d.dump(d.unpackValue(v.MapIndex(key)))
-			if i < (numEntries - 1) {
-				d.w.Write(commaNewlineBytes)
-			} else {
-				d.w.Write(newlineBytes)
-			}
+			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
 		d.indent()
@@ -392,11 +345,7 @@ func (d *dumpState) dump(v reflect.Value) {
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
 			d.dump(d.unpackValue(v.Field(i)))
-			if i < (numFields - 1) {
-				d.w.Write(commaNewlineBytes)
-			} else {
-				d.w.Write(newlineBytes)
-			}
+			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
 		d.indent()
@@ -418,6 +367,11 @@ func (d *dumpState) dump(v reflect.Value) {
 			fmt.Fprintf(d.w, "%v", v.String())
 		}
 	}
+	switch kind {
+	case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
+	default:
+		d.w.Write(closeParenBytes)
+	}
 }
 
 // fdump is a helper function to consolidate the logic from the various public
@@ -426,8 +380,9 @@ func fdump(cs *ConfigState, w io.Writer, a ...interface{}) {
 	for _, arg := range a {
 		if arg == nil {
 			w.Write(interfaceBytes)
-			w.Write(spaceBytes)
-			w.Write(nilAngleBytes)
+			w.Write(openParenBytes)
+			w.Write(nilBytes)
+			w.Write(closeParenBytes)
 			w.Write(newlineBytes)
 			continue
 		}

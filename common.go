@@ -17,6 +17,7 @@
 package utter
 
 import (
+	"fmt"
 	"io"
 	"reflect"
 	"sort"
@@ -138,23 +139,20 @@ var (
 	iBytes                = []byte("i")
 	trueBytes             = []byte("true")
 	falseBytes            = []byte("false")
-	interfaceBytes        = []byte("(interface {})")
+	interfaceBytes        = []byte("interface{}")
 	commaNewlineBytes     = []byte(",\n")
 	newlineBytes          = []byte("\n")
 	openBraceBytes        = []byte("{")
 	openBraceNewlineBytes = []byte("{\n")
 	closeBraceBytes       = []byte("}")
-	asteriskBytes         = []byte("*")
+	ampersandBytes        = []byte("&")
 	colonBytes            = []byte(":")
 	colonSpaceBytes       = []byte(": ")
 	openParenBytes        = []byte("(")
 	closeParenBytes       = []byte(")")
-	spaceBytes            = []byte(" ")
 	pointerChainBytes     = []byte("->")
-	nilAngleBytes         = []byte("<nil>")
-	maxNewlineBytes       = []byte("<max depth reached>\n")
-	maxShortBytes         = []byte("<max>")
-	circularBytes         = []byte("<already shown>")
+	nilBytes              = []byte("nil")
+	circularBytes         = []byte("(<already shown>)")
 	circularShortBytes    = []byte("<shown>")
 	invalidAngleBytes     = []byte("<invalid>")
 	openBracketBytes      = []byte("[")
@@ -165,8 +163,6 @@ var (
 	closeAngleBytes       = []byte(">")
 	openMapBytes          = []byte("map[")
 	closeMapBytes         = []byte("]")
-	lenEqualsBytes        = []byte("len=")
-	capEqualsBytes        = []byte("cap=")
 )
 
 // hexDigits is used to map a decimal value to a hex digit.
@@ -201,7 +197,6 @@ func printFloat(w io.Writer, val float64, precision int) {
 // for the real and imaginary parts to Writer w.
 func printComplex(w io.Writer, c complex128, floatPrecision int) {
 	r := real(c)
-	w.Write(openParenBytes)
 	w.Write([]byte(strconv.FormatFloat(r, 'g', -1, floatPrecision)))
 	i := imag(c)
 	if i >= 0 {
@@ -209,16 +204,39 @@ func printComplex(w io.Writer, c complex128, floatPrecision int) {
 	}
 	w.Write([]byte(strconv.FormatFloat(i, 'g', -1, floatPrecision)))
 	w.Write(iBytes)
-	w.Write(closeParenBytes)
 }
 
-// printHexPtr outputs a uintptr formatted as hexidecimal with a leading '0x'
+// hexDump is a modified 'hexdump -C'-like that returns a commented Go syntax
+// byte slice or array.
+func hexDump(w io.Writer, data []byte, indent string) {
+	var comment [16]byte
+
+	for i, v := range data {
+		if i%16 == 0 {
+			fmt.Fprint(w, indent)
+		}
+
+		fmt.Fprintf(w, "%#2x, ", v)
+		if v < 32 || v > 126 {
+			v = '.'
+		}
+		comment[i%16] = v
+
+		if i%16 == 15 {
+			fmt.Fprintf(w, "// |%s|\n", comment[:])
+		} else if i == len(data)-1 {
+			fmt.Fprintf(w, "// |%s|\n", comment[:len(data)%16])
+		}
+	}
+}
+
+// printHexPtr outputs a uintptr formatted as hexadecimal with a leading '0x'
 // prefix to Writer w.
 func printHexPtr(w io.Writer, p uintptr) {
 	// Null pointer.
 	num := uint64(p)
 	if num == 0 {
-		w.Write(nilAngleBytes)
+		w.Write(nilBytes)
 		return
 	}
 

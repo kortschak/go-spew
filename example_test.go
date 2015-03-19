@@ -101,22 +101,22 @@ func ExampleDump() {
 	utter.Dump(s1, f, b)
 
 	// Output:
-	// (utter_test.Foo) {
-	//  unexportedField: (utter_test.Bar) {
-	//   flag: (utter_test.Flag) 1,
-	//   data: (uintptr) <nil>
-	//  },
-	//  ExportedField: (map[interface {}]interface {}) (len=1) {
-	//   (string) (len=3) "one": (bool) true
-	//  }
-	// }
-	// (utter_test.Flag) 5
-	// ([]uint8) (len=34 cap=34) {
-	//  00000000  11 12 13 14 15 16 17 18  19 1a 1b 1c 1d 1e 1f 20  |............... |
-	//  00000010  21 22 23 24 25 26 27 28  29 2a 2b 2c 2d 2e 2f 30  |!"#$%&'()*+,-./0|
-	//  00000020  31 32                                             |12|
-	// }
 	//
+	// utter_test.Foo{
+	//  unexportedField: utter_test.Bar{
+	//   flag: utter_test.Flag(1),
+	//   data: uintptr(nil),
+	//  },
+	//  ExportedField: map[interface {}]interface {}{
+	//   string("one"): bool(true),
+	//  },
+	// }
+	// utter_test.Flag(5)
+	// []uint8{
+	//  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, // |............... |
+	//  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, // |!"#$%&'()*+,-./0|
+	//  0x31, 0x32, // |12|
+	// }
 }
 
 // This example demonstrates how to use a ConfigState.
@@ -130,8 +130,9 @@ func ExampleConfigState() {
 	scs.Dump(v)
 
 	// Output:
-	// (map[string]int) (len=1) {
-	// 	(string) (len=3) "one": (int) 1
+	//
+	// map[string]int{
+	// 	string("one"): int(1),
 	// }
 }
 
@@ -154,23 +155,23 @@ func ExampleConfigState_Dump() {
 	scs2.Dump(s1)
 
 	// Output:
-	// (utter_test.Foo) {
-	// 	unexportedField: (utter_test.Bar) {
-	// 		flag: (utter_test.Flag) 1,
-	// 		data: (uintptr) <nil>
-	// 	},
-	// 	ExportedField: (map[interface {}]interface {}) (len=1) {
-	//		(string) (len=3) "one": (bool) true
-	// 	}
-	// }
-	// (utter_test.Foo) {
-	//  unexportedField: (utter_test.Bar) {
-	//   flag: (utter_test.Flag) 1,
-	//   data: (uintptr) <nil>
-	//  },
-	//  ExportedField: (map[interface {}]interface {}) (len=1) {
-	//   (string) (len=3) "one": (bool) true
-	//  }
-	// }
 	//
+	// utter_test.Foo{
+	// 	unexportedField: utter_test.Bar{
+	// 		flag: utter_test.Flag(1),
+	// 		data: uintptr(nil),
+	// 	},
+	// 	ExportedField: map[interface {}]interface {}{
+	// 		string("one"): bool(true),
+	// 	},
+	// }
+	// utter_test.Foo{
+	//  unexportedField: utter_test.Bar{
+	//   flag: utter_test.Flag(1),
+	//   data: uintptr(nil),
+	//  },
+	//  ExportedField: map[interface {}]interface {}{
+	//   string("one"): bool(true),
+	//  },
+	// }
 }
