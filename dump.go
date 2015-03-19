@@ -419,8 +419,8 @@ package:
 
 	* Pointers are dereferenced and followed
 	* Circular data structures are detected and handled properly
-	* Byte arrays and slices are dumped like the hexdump -C command which
-	  includes offsets, byte values in hex, and ASCII output
+	* Byte arrays and slices are dumped in a way similar to the hexdump -C command
+	  which includes byte values in hex, and ASCII output
 
 The configuration options are controlled by an exported package global,
 utter.Config.  See ConfigState for options documentation.
