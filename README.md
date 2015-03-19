@@ -1,15 +1,15 @@
-go-spew
-=======
+utter
+=====
 
-[![Build Status](https://travis-ci.org/davecgh/go-spew.png?branch=master)]
-(https://travis-ci.org/davecgh/go-spew) [![Coverage Status]
-(https://coveralls.io/repos/davecgh/go-spew/badge.png?branch=master)]
-(https://coveralls.io/r/davecgh/go-spew?branch=master)
+[![Build Status](https://travis-ci.org/kortschak/utter.png?branch=master)]
+(https://travis-ci.org/kortschak/utter) [![Coverage Status]
+(https://coveralls.io/repos/kortschak/utter/badge.png?branch=master)]
+(https://coveralls.io/r/kortschak/utter?branch=master)
 
-Go-spew implements a deep pretty printer for Go data structures to aid in
+utter implements a deep pretty printer for Go data structures to aid in
 debugging.  A comprehensive suite of tests with 100% test coverage is provided
 to ensure proper functionality.  See `test_coverage.txt` for the gocov coverage
-report.  Go-spew is licensed under the liberal ISC license, so it may be used in
+report.  utter is licensed under the liberal ISC license, so it may be used in
 open source or commercial projects.
 
 If you're interested in reading about how this package came to life and some
@@ -19,21 +19,21 @@ post about it
 
 ## Documentation
 
-[![GoDoc](https://godoc.org/github.com/davecgh/go-spew/spew?status.png)]
-(http://godoc.org/github.com/davecgh/go-spew/spew)
+[![GoDoc](https://godoc.org/github.com/kortschak/utter?status.png)]
+(http://godoc.org/github.com/kortschak/utter)
 
 Full `go doc` style documentation for the project can be viewed online without
 installing this package by using the excellent GoDoc site here:
-http://godoc.org/github.com/davecgh/go-spew/spew
+http://godoc.org/github.com/kortschak/utter
 
 You can also view the documentation locally once the package is installed with
 the `godoc` tool by running `godoc -http=":6060"` and pointing your browser to
-http://localhost:6060/pkg/github.com/davecgh/go-spew/spew
+http://localhost:6060/pkg/github.com/kortschak/utter
 
 ## Installation
 
 ```bash
-$ go get -u github.com/davecgh/go-spew/spew
+$ go get -u github.com/kortschak/utter
 ```
 
 ## Quick Start
@@ -42,21 +42,21 @@ To dump a variable with full newlines, indentation, type, and pointer
 information use Dump, Fdump, or Sdump:
 
 ```Go
-spew.Dump(myVar1, myVar2, ...)
-spew.Fdump(someWriter, myVar1, myVar2, ...)
-str := spew.Sdump(myVar1, myVar2, ...)
+utter.Dump(myVar1, myVar2, ...)
+utter.Fdump(someWriter, myVar1, myVar2, ...)
+str := utter.Sdump(myVar1, myVar2, ...)
 ```
 
 Alternatively, if you would prefer to use format strings with a compacted inline
 printing style, use the convenience wrappers Printf, Fprintf, etc with %v (most
 compact), %+v (adds pointer addresses), %#v (adds types), or %#+v (adds types
-and pointer addresses): 
+and pointer addresses):
 
 ```Go
-spew.Printf("myVar1: %v -- myVar2: %+v", myVar1, myVar2)
-spew.Printf("myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
-spew.Fprintf(someWriter, "myVar1: %v -- myVar2: %+v", myVar1, myVar2)
-spew.Fprintf(someWriter, "myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
+utter.Printf("myVar1: %v -- myVar2: %+v", myVar1, myVar2)
+utter.Printf("myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
+utter.Fprintf(someWriter, "myVar1: %v -- myVar2: %+v", myVar1, myVar2)
+utter.Fprintf(someWriter, "myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
 ```
 
 ## Sample Dump Output
@@ -98,9 +98,9 @@ Pointer to circular struct with a uint8 field and a pointer to itself:
 
 ## Configuration Options
 
-Configuration of spew is handled by fields in the ConfigState type. For
+Configuration of utter is handled by fields in the ConfigState type. For
 convenience, all of the top-level functions use a global state available via the
-spew.Config global.
+utter.Config global.
 
 It is also possible to create a ConfigState instance that provides methods
 equivalent to the top-level functions. This allows concurrent configuration
@@ -110,23 +110,6 @@ options. See the ConfigState documentation for more details.
 * Indent
 	String to use for each indentation level for Dump functions.
 	It is a single space by default.  A popular alternative is "\t".
-
-* MaxDepth
-	Maximum number of levels to descend into nested data structures.
-	There is no limit by default.
-
-* DisableMethods
-	Disables invocation of error and Stringer interface methods.
-	Method invocation is enabled by default.
-
-* DisablePointerMethods
-	Disables invocation of error and Stringer interface methods on types
-	which only accept pointer receivers from non-pointer variables.
-	Pointer method invocation is enabled by default.
-
-* ContinueOnMethod
-	Enables recursion into types after invoking error and Stringer interface
-	methods. Recursion after method invocation is disabled by default.
 
 * SortKeys
 	Specifies map keys should be sorted before being printed. Use
@@ -139,4 +122,4 @@ options. See the ConfigState documentation for more details.
 
 ## License
 
-Go-spew is licensed under the liberal ISC License.
+utter is licensed under the liberal ISC License.

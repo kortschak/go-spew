@@ -15,12 +15,12 @@
  */
 
 /*
-This test file is part of the spew package rather than than the spew_test
+This test file is part of the utter package rather than than the utter_test
 package because it needs access to internals to properly test certain cases
 which are not possible via the public interface since they should never happen.
 */
 
-package spew
+package utter
 
 import (
 	"bytes"
@@ -69,16 +69,6 @@ func TestInvalidReflectValue(t *testing.T) {
 		t.Errorf("InvalidReflectValue #%d\n got: %s want: %s", i, s, want)
 	}
 	i++
-
-	// Formatter invalid reflect value.
-	buf2 := new(dummyFmtState)
-	f := formatState{value: *v, cs: &Config, fs: buf2}
-	f.format(*v)
-	s = buf2.String()
-	want = "<invalid>"
-	if s != want {
-		t.Errorf("InvalidReflectValue #%d got: %s want: %s", i, s, want)
-	}
 }
 
 // changeKind uses unsafe to intentionally change the kind of a reflect.Value to
@@ -124,29 +114,6 @@ func TestAddedReflectValue(t *testing.T) {
 		t.Errorf("TestAddedReflectValue #%d\n got: %s want: %s", i, s, want)
 	}
 	i++
-
-	// Formatter using a reflect.Value that is exported.
-	changeKind(&v, false)
-	buf2 := new(dummyFmtState)
-	f := formatState{value: v, cs: &Config, fs: buf2}
-	f.format(v)
-	s = buf2.String()
-	want = "5"
-	if s != want {
-		t.Errorf("TestAddedReflectValue #%d got: %s want: %s", i, s, want)
-	}
-	i++
-
-	// Formatter using a reflect.Value that is not exported.
-	changeKind(&v, true)
-	buf2.Reset()
-	f = formatState{value: v, cs: &Config, fs: buf2}
-	f.format(v)
-	s = buf2.String()
-	want = "<int8 Value>"
-	if s != want {
-		t.Errorf("TestAddedReflectValue #%d got: %s want: %s", i, s, want)
-	}
 }
 
 // SortValues makes the internal sortValues function available to the test

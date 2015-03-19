@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package spew
+package utter
 
 import (
 	"bytes"
@@ -296,16 +296,6 @@ func (d *dumpState) dump(v reflect.Value) {
 		d.w.Write(spaceBytes)
 	}
 
-	// Call Stringer/error interfaces if they exist and the handle methods flag
-	// is enabled
-	if !d.cs.DisableMethods {
-		if (kind != reflect.Invalid) && (kind != reflect.Interface) {
-			if handled := handleMethods(d.cs, d.w, v); handled {
-				return
-			}
-		}
-	}
-
 	switch kind {
 	case reflect.Invalid:
 		// Do nothing.  We should never get here since invalid has already
@@ -342,12 +332,7 @@ func (d *dumpState) dump(v reflect.Value) {
 	case reflect.Array:
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
-		if (d.cs.MaxDepth != 0) && (d.depth > d.cs.MaxDepth) {
-			d.indent()
-			d.w.Write(maxNewlineBytes)
-		} else {
-			d.dumpSlice(v)
-		}
+		d.dumpSlice(v)
 		d.depth--
 		d.indent()
 		d.w.Write(closeBraceBytes)
@@ -375,25 +360,20 @@ func (d *dumpState) dump(v reflect.Value) {
 
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
-		if (d.cs.MaxDepth != 0) && (d.depth > d.cs.MaxDepth) {
-			d.indent()
-			d.w.Write(maxNewlineBytes)
-		} else {
-			numEntries := v.Len()
-			keys := v.MapKeys()
-			if d.cs.SortKeys {
-				sortValues(keys)
-			}
-			for i, key := range keys {
-				d.dump(d.unpackValue(key))
-				d.w.Write(colonSpaceBytes)
-				d.ignoreNextIndent = true
-				d.dump(d.unpackValue(v.MapIndex(key)))
-				if i < (numEntries - 1) {
-					d.w.Write(commaNewlineBytes)
-				} else {
-					d.w.Write(newlineBytes)
-				}
+		numEntries := v.Len()
+		keys := v.MapKeys()
+		if d.cs.SortKeys {
+			sortValues(keys)
+		}
+		for i, key := range keys {
+			d.dump(d.unpackValue(key))
+			d.w.Write(colonSpaceBytes)
+			d.ignoreNextIndent = true
+			d.dump(d.unpackValue(v.MapIndex(key)))
+			if i < (numEntries - 1) {
+				d.w.Write(commaNewlineBytes)
+			} else {
+				d.w.Write(newlineBytes)
 			}
 		}
 		d.depth--
@@ -403,24 +383,19 @@ func (d *dumpState) dump(v reflect.Value) {
 	case reflect.Struct:
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
-		if (d.cs.MaxDepth != 0) && (d.depth > d.cs.MaxDepth) {
+		vt := v.Type()
+		numFields := v.NumField()
+		for i := 0; i < numFields; i++ {
 			d.indent()
-			d.w.Write(maxNewlineBytes)
-		} else {
-			vt := v.Type()
-			numFields := v.NumField()
-			for i := 0; i < numFields; i++ {
-				d.indent()
-				vtf := vt.Field(i)
-				d.w.Write([]byte(vtf.Name))
-				d.w.Write(colonSpaceBytes)
-				d.ignoreNextIndent = true
-				d.dump(d.unpackValue(v.Field(i)))
-				if i < (numFields - 1) {
-					d.w.Write(commaNewlineBytes)
-				} else {
-					d.w.Write(newlineBytes)
-				}
+			vtf := vt.Field(i)
+			d.w.Write([]byte(vtf.Name))
+			d.w.Write(colonSpaceBytes)
+			d.ignoreNextIndent = true
+			d.dump(d.unpackValue(v.Field(i)))
+			if i < (numFields - 1) {
+				d.w.Write(commaNewlineBytes)
+			} else {
+				d.w.Write(newlineBytes)
 			}
 		}
 		d.depth--
@@ -487,16 +462,11 @@ package:
 
 	* Pointers are dereferenced and followed
 	* Circular data structures are detected and handled properly
-	* Custom Stringer/error interfaces are optionally invoked, including
-	  on unexported types
-	* Custom types which only implement the Stringer/error interfaces via
-	  a pointer receiver are optionally invoked when passing non-pointer
-	  variables
 	* Byte arrays and slices are dumped like the hexdump -C command which
 	  includes offsets, byte values in hex, and ASCII output
 
 The configuration options are controlled by an exported package global,
-spew.Config.  See ConfigState for options documentation.
+utter.Config.  See ConfigState for options documentation.
 
 See Fdump if you would prefer dumping to an arbitrary io.Writer or Sdump to
 get the formatted result as a string.

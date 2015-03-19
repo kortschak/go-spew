@@ -16,7 +16,7 @@ fi
 
 # Only run the cgo tests if gcc is installed.
 if type gcc >/dev/null 2>&1; then
-	(cd spew && gocov test -tags testcgo | gocov report)
+	(gocov test -tags testcgo | gocov report)
 else
-	(cd spew && gocov test | gocov report)
+	(gocov test | gocov report)
 fi

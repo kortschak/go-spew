@@ -14,13 +14,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package spew_test
+package utter_test
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"reflect"
 	"testing"
+
+	"github.com/kortschak/utter"
 )
 
 // custom type to test Stinger interface on non-pointer receiver.
@@ -73,7 +74,7 @@ type embedwrap struct {
 	e *embed
 }
 
-// panicer is used to intentionally cause a panic for testing spew properly
+// panicer is used to intentionally cause a panic for testing utter properly
 // handles them
 type panicer int
 
@@ -183,7 +184,7 @@ func TestSortValues(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		spew.SortValues(test.input)
+		utter.SortValues(test.input)
 		// reflect.DeepEqual cannot really make sense of reflect.Value,
 		// probably because of all the pointer tricks. For instance,
 		// v(2.0) != v(2.0) on a 32-bits system. Turn them into interface{}
