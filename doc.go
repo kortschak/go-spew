@@ -15,28 +15,21 @@
  */
 
 /*
-Package utter implements a deep pretty printer for Go data structures to aid in
-debugging.
+Package utter implements a deep pretty printer for Go data structures to aid
+data snapshotting.
 
 A quick overview of the additional features utter provides over the built-in
 printing facilities for Go data types are as follows:
 
 	* Pointers are dereferenced and followed
-	* Circular data structures are detected and handled properly
-	* Byte arrays and slices are dumped like the hexdump -C command which
-	  includes offsets, byte values in hex, and ASCII output (only when using
-	  Dump style)
+	* Circular data structures are detected and annotated
+	* Byte arrays and slices are dumped in a way similar to the hexdump -C command
+	  which includes byte values in hex, and ASCII output
 
-There are two different approaches utter allows for dumping Go data structures:
+The approache utter allows for dumping Go data structures is less flexible than
+its parent tool. It has just a:
 
-	* Dump style which prints with newlines, customizable indentation,
-	  and additional debug information such as types and all pointer addresses
-	  used to indirect to the final value
-	* A custom Formatter interface that integrates cleanly with the standard fmt
-	  package and replaces %v, %+v, %#v, and %#+v to provide inline printing
-	  similar to the default %v while providing the additional functionality
-	  outlined above and passing unsupported format verbs such as %x and %q
-	  along to fmt
+	* Dump style which prints with newlines, customizable indentation
 
 Quick Start
 
@@ -48,15 +41,6 @@ information use Dump, Fdump, or Sdump:
 	utter.Dump(myVar1, myVar2, ...)
 	utter.Fdump(someWriter, myVar1, myVar2, ...)
 	str := utter.Sdump(myVar1, myVar2, ...)
-
-Alternatively, if you would prefer to use format strings with a compacted inline
-printing style, use the convenience wrappers Printf, Fprintf, etc with
-%v (most compact), %+v (adds pointer addresses), %#v (adds types), or
-%#+v (adds types and pointer addresses):
-	utter.Printf("myVar1: %v -- myVar2: %+v", myVar1, myVar2)
-	utter.Printf("myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
-	utter.Fprintf(someWriter, "myVar1: %v -- myVar2: %+v", myVar1, myVar2)
-	utter.Fprintf(someWriter, "myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
 
 Configuration Options
 
@@ -101,22 +85,22 @@ Sample Dump Output
 See the Dump example for details on the setup of the types and variables being
 shown here.
 
-	(main.Foo) {
-	 unexportedField: (*main.Bar)(0xf84002e210)({
-	  flag: (main.Flag) 1,
-	  data: (uintptr) <nil>
+	main.Foo{
+	 unexportedField: &main.Bar{
+	  flag: main.Flag(1),
+	  data: uintptr(nil),
 	 }),
-	 ExportedField: (map[interface {}]interface {}) (len=1) {
-	  (string) (len=3) "one": (bool) true
-	 }
+	 ExportedField: map[interface {}]interface {}{
+	  string("one"): bool(true),
+	 },
 	}
 
 Byte (and uint8) arrays and slices are displayed uniquely like the hexdump -C
 command as shown.
-	([]uint8) (len=32 cap=32) {
-	 00000000  11 12 13 14 15 16 17 18  19 1a 1b 1c 1d 1e 1f 20  |............... |
-	 00000010  21 22 23 24 25 26 27 28  29 2a 2b 2c 2d 2e 2f 30  |!"#$%&'()*+,-./0|
-	 00000020  31 32                                             |12|
+	[]uint8{
+	 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20 // |............... |
+	 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30 // |!"#$%&'()*+,-./0|
+	 0x31, 0x32, // |12|
 	}
 */
 package utter
