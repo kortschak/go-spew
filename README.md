@@ -6,6 +6,13 @@ utter
 (https://coveralls.io/repos/kortschak/utter/badge.png?branch=master)]
 (https://coveralls.io/r/kortschak/utter?branch=master)
 
+utter is a fork of the outstanding [go-spew tool](https://github.com/davecgh/go-spew).
+Where go-spew is an aid for debugging, providing annotation of dumped datastructures,
+utter is a tool for taking snapshots of data structures to include in tests or other
+code. An utter dump will not construct cyclic structure literals and a number of
+pseudo-code representations of pointer-based structures will require subsequent
+processing.
+
 utter implements a deep pretty printer for Go data structures to aid in
 debugging.  A comprehensive suite of tests with 100% test coverage is provided
 to ensure proper functionality.  See `test_coverage.txt` for the gocov coverage
