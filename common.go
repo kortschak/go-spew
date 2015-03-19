@@ -140,6 +140,7 @@ var (
 	trueBytes             = []byte("true")
 	falseBytes            = []byte("false")
 	interfaceBytes        = []byte("interface{}")
+	interfaceTypeBytes    = []byte("interface {}")
 	commaNewlineBytes     = []byte(",\n")
 	newlineBytes          = []byte("\n")
 	openBraceNewlineBytes = []byte("{\n")

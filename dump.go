@@ -123,7 +123,8 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	// Display type information.
 	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
-	d.w.Write([]byte(ve.Type().String()))
+	typeBytes := []byte(ve.Type().String())
+	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
 
 	// Display dereferenced value.
 	switch {
@@ -241,7 +242,8 @@ func (d *dumpState) dump(v reflect.Value) {
 	// Print type information unless already handled elsewhere.
 	if !d.ignoreNextType {
 		d.indent()
-		d.w.Write([]byte(v.Type().String()))
+		typeBytes := []byte(v.Type().String())
+		d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
 	}
 	d.ignoreNextType = false
 

@@ -301,7 +301,7 @@ func addArrayDumpTests() {
 	v3 := [3]interface{}{v3i0, int(2), uint(3)}
 	nv3 := (*[3]interface{})(nil)
 	pv3 := &v3
-	v3t := "[3]interface {}"
+	v3t := "[3]interface{}"
 	v3t2 := "string"
 	v3t3 := "int"
 	v3t4 := "uint"
@@ -363,11 +363,11 @@ func addSliceDumpTests() {
 	v3 := []interface{}{v3i0, int(2), uint(3), nil}
 	nv3 := (*[]interface{})(nil)
 	pv3 := &v3
-	v3t := "[]interface {}"
+	v3t := "[]interface{}"
 	v3t2 := "string"
 	v3t3 := "int"
 	v3t4 := "uint"
-	v3t5 := "interface {}"
+	v3t5 := "interface{}"
 	v3s := "{\n " + v3t2 + "(\"one\"),\n " + v3t3 + "(2),\n " + v3t4 + "(3),\n " + v3t5 + "(nil),\n}"
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
@@ -424,7 +424,7 @@ func addInterfaceDumpTests() {
 	var v interface{}
 	nv := (*interface{})(nil)
 	pv := &v
-	vt := "interface {}"
+	vt := "interface{}"
 	vs := "(nil)"
 	addDumpTest(v, "interface{}"+vs+"\n")
 	addDumpTest(pv, "&"+vt+vs+"\n")
@@ -483,7 +483,7 @@ func addMapDumpTests() {
 	nilMap3 := map[interface{}]interface{}(nil)
 	nm3 := (*map[interface{}]interface{})(nil)
 	pm3 := &m3
-	m3t := "map[interface {}]interface {}"
+	m3t := "map[interface{}]interface{}"
 	m3t1 := "string"
 	m3t2 := "int"
 	m3s := "{\n " + m3t1 + "(\"one\"): " + m3t2 + "(1),\n}"
@@ -499,9 +499,9 @@ func addMapDumpTests() {
 	nilMap4 := map[string]interface{}(nil)
 	nm4 := (*map[string]interface{})(nil)
 	pm4 := &m4
-	m4t := "map[string]interface {}"
+	m4t := "map[string]interface{}"
 	m4t1 := "string"
-	m4t2 := "interface {}"
+	m4t2 := "interface{}"
 	m4s := "{\n " + m4t1 + "(\"nil\"): " + m4t2 + "(nil),\n}"
 	addDumpTest(m4, m4t+m4s+"\n")
 	addDumpTest(pm4, "&"+m4t+m4s+"\n")
