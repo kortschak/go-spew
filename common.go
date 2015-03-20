@@ -213,7 +213,7 @@ func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
 			w.Write(spaceBytes)
 		}
 
-		fmt.Fprintf(w, "%#2x,", v)
+		fmt.Fprintf(w, "%#02x,", v)
 		if comment {
 			if v < 32 || v > 126 {
 				v = '.'

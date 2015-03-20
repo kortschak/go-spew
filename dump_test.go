@@ -765,7 +765,7 @@ func TestDump(t *testing.T) {
 		utter.Fdump(buf, test.in)
 		s := buf.String()
 		if testFailed(s, test.wants) {
-			t.Errorf("Dump #%d\n got: %s %s", i, s, stringizeWants(test.wants))
+			t.Errorf("Dump #%d\n got: %q\n %s", i, s, stringizeWants(test.wants))
 			continue
 		}
 	}

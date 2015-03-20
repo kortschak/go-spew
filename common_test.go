@@ -96,9 +96,9 @@ func stringizeWants(wants []string) string {
 	s := ""
 	for i, want := range wants {
 		if i > 0 {
-			s += fmt.Sprintf("want%d: %s", i+1, want)
+			s += fmt.Sprintf("want%d: %q", i+1, want)
 		} else {
-			s += "want: " + want
+			s += fmt.Sprintf("want: %q", want)
 		}
 	}
 	return s
