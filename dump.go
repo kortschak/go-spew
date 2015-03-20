@@ -125,7 +125,13 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	// Display type information.
 	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
 	typeBytes := []byte(ve.Type().String())
+	if typeBytes[0] == '*' {
+		d.w.Write(openParenBytes)
+	}
 	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+	if typeBytes[0] == '*' {
+		d.w.Write(closeParenBytes)
+	}
 
 	// Display dereferenced value.
 	switch {

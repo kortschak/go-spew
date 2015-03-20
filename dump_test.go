@@ -97,7 +97,7 @@ func addIntDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Max int16.
 	v2 := int16(32767)
@@ -108,7 +108,7 @@ func addIntDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 
 	// Max int32.
 	v3 := int32(2147483647)
@@ -119,7 +119,7 @@ func addIntDumpTests() {
 	addDumpTest(v3, v3t+"("+v3s+")\n")
 	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
 	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 
 	// Max int64.
 	v4 := int64(9223372036854775807)
@@ -130,7 +130,7 @@ func addIntDumpTests() {
 	addDumpTest(v4, v4t+"("+v4s+")\n")
 	addDumpTest(pv4, "&"+v4t+"("+v4s+")\n")
 	addDumpTest(&pv4, "&&"+v4t+"("+v4s+")\n")
-	addDumpTest(nv4, "*"+v4t+"(nil)\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 
 	// Max int.
 	v5 := int(2147483647)
@@ -141,7 +141,7 @@ func addIntDumpTests() {
 	addDumpTest(v5, v5t+"("+v5s+")\n")
 	addDumpTest(pv5, "&"+v5t+"("+v5s+")\n")
 	addDumpTest(&pv5, "&&"+v5t+"("+v5s+")\n")
-	addDumpTest(nv5, "*"+v5t+"(nil)\n")
+	addDumpTest(nv5, "(*"+v5t+")(nil)\n")
 }
 
 func addUintDumpTests() {
@@ -154,7 +154,7 @@ func addUintDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Max uint16.
 	v2 := uint16(65535)
@@ -165,7 +165,7 @@ func addUintDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 
 	// Max uint32.
 	v3 := uint32(4294967295)
@@ -176,7 +176,7 @@ func addUintDumpTests() {
 	addDumpTest(v3, v3t+"("+v3s+")\n")
 	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
 	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 
 	// Max uint64.
 	v4 := uint64(18446744073709551615)
@@ -187,7 +187,7 @@ func addUintDumpTests() {
 	addDumpTest(v4, v4t+"("+v4s+")\n")
 	addDumpTest(pv4, "&"+v4t+"("+v4s+")\n")
 	addDumpTest(&pv4, "&&"+v4t+"("+v4s+")\n")
-	addDumpTest(nv4, "*"+v4t+"(nil)\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 
 	// Max uint.
 	v5 := uint(4294967295)
@@ -198,7 +198,7 @@ func addUintDumpTests() {
 	addDumpTest(v5, v5t+"("+v5s+")\n")
 	addDumpTest(pv5, "&"+v5t+"("+v5s+")\n")
 	addDumpTest(&pv5, "&&"+v5t+"("+v5s+")\n")
-	addDumpTest(nv5, "*"+v5t+"(nil)\n")
+	addDumpTest(nv5, "(*"+v5t+")(nil)\n")
 }
 
 func addBoolDumpTests() {
@@ -211,7 +211,7 @@ func addBoolDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Boolean false.
 	v2 := bool(false)
@@ -233,7 +233,7 @@ func addFloatDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Standard float64.
 	v2 := float64(3.1415926)
@@ -244,7 +244,7 @@ func addFloatDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 }
 
 func addComplexDumpTests() {
@@ -257,7 +257,7 @@ func addComplexDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Standard complex128.
 	v2 := complex(float64(-6), 2)
@@ -268,7 +268,7 @@ func addComplexDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 }
 
 func addArrayDumpTests() {
@@ -281,7 +281,7 @@ func addArrayDumpTests() {
 	addDumpTest(v, "[3]"+vt+vs+"\n")
 	addDumpTest(pv, "&[3]"+vt+vs+"\n")
 	addDumpTest(&pv, "&&[3]"+vt+vs+"\n")
-	addDumpTest(nv, "*[3]"+vt+"(nil)\n")
+	addDumpTest(nv, "(*[3]"+vt+")(nil)\n")
 
 	// Array containing type with custom formatter on pointer receiver only.
 	v2i0 := pstringer("1")
@@ -295,7 +295,7 @@ func addArrayDumpTests() {
 	addDumpTest(v2, "[3]"+v2t+v2s+"\n")
 	addDumpTest(pv2, "&[3]"+v2t+v2s+"\n")
 	addDumpTest(&pv2, "&&[3]"+v2t+v2s+"\n")
-	addDumpTest(nv2, "*[3]"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*[3]"+v2t+")(nil)\n")
 
 	// Array containing interfaces.
 	v3i0 := "one"
@@ -310,7 +310,7 @@ func addArrayDumpTests() {
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s+"\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 
 	// Array containing bytes.
 	v4 := [34]byte{
@@ -330,7 +330,7 @@ func addArrayDumpTests() {
 	addDumpTest(v4, v4t+v4s+"\n")
 	addDumpTest(pv4, "&"+v4t+v4s+"\n")
 	addDumpTest(&pv4, "&&"+v4t+v4s+"\n")
-	addDumpTest(nv4, "*"+v4t+"(nil)\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 }
 
 func addSliceDumpTests() {
@@ -343,7 +343,7 @@ func addSliceDumpTests() {
 	addDumpTest(v, "[]"+vt+vs+"\n")
 	addDumpTest(pv, "&[]"+vt+vs+"\n")
 	addDumpTest(&pv, "&&[]"+vt+vs+"\n")
-	addDumpTest(nv, "*[]"+vt+"(nil)\n")
+	addDumpTest(nv, "(*[]"+vt+")(nil)\n")
 
 	// Slice containing type with custom formatter on pointer receiver only.
 	v2i0 := pstringer("1")
@@ -357,7 +357,7 @@ func addSliceDumpTests() {
 	addDumpTest(v2, "[]"+v2t+v2s+"\n")
 	addDumpTest(pv2, "&[]"+v2t+v2s+"\n")
 	addDumpTest(&pv2, "&&[]"+v2t+v2s+"\n")
-	addDumpTest(nv2, "*[]"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*[]"+v2t+")(nil)\n")
 
 	// Slice containing interfaces.
 	v3i0 := "one"
@@ -373,7 +373,7 @@ func addSliceDumpTests() {
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s+"\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 
 	// Slice containing bytes.
 	v4 := []byte{
@@ -393,7 +393,7 @@ func addSliceDumpTests() {
 	addDumpTest(v4, v4t+v4s+"\n")
 	addDumpTest(pv4, "&"+v4t+v4s+"\n")
 	addDumpTest(&pv4, "&&"+v4t+v4s+"\n")
-	addDumpTest(nv4, "*"+v4t+"(nil)\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 
 	// Nil slice.
 	v5 := []int(nil)
@@ -404,7 +404,7 @@ func addSliceDumpTests() {
 	addDumpTest(v5, v5t+"("+v5s+")\n")
 	addDumpTest(pv5, "&"+v5t+"("+v5s+")\n")
 	addDumpTest(&pv5, "&&"+v5t+"("+v5s+")\n")
-	addDumpTest(nv5, "*"+v5t+"(nil)\n")
+	addDumpTest(nv5, "(*"+v5t+")(nil)\n")
 }
 
 func addStringDumpTests() {
@@ -417,7 +417,7 @@ func addStringDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 }
 
 func addInterfaceDumpTests() {
@@ -430,7 +430,7 @@ func addInterfaceDumpTests() {
 	addDumpTest(v, "interface{}"+vs+"\n")
 	addDumpTest(pv, "&"+vt+vs+"\n")
 	addDumpTest(&pv, "&&"+vt+vs+"\n")
-	addDumpTest(nv, "*"+vt+vs+"\n")
+	addDumpTest(nv, "(*"+vt+")"+vs+"\n")
 
 	// Sub-interface.
 	v2 := interface{}(uint16(65535))
@@ -458,7 +458,7 @@ func addMapDumpTests() {
 	addDumpTest(m, mt+ms+"\n", mt+ms2+"\n")
 	addDumpTest(pm, "&"+mt+ms+"\n", "&"+mt+ms2+"\n")
 	addDumpTest(&pm, "&&"+mt+ms+"\n", "&&"+mt+ms2+"\n")
-	addDumpTest(nm, "*"+mt+"(nil)\n")
+	addDumpTest(nm, "(*"+mt+")(nil)\n")
 	addDumpTest(nilMap, mt+"(nil)\n")
 
 	// Map with custom formatter type on pointer receiver only keys and vals.
@@ -475,7 +475,7 @@ func addMapDumpTests() {
 	addDumpTest(m2, m2t+m2s+"\n")
 	addDumpTest(pm2, "&"+m2t+m2s+"\n")
 	addDumpTest(&pm2, "&&"+m2t+m2s+"\n")
-	addDumpTest(nm2, "*"+m2t+"(nil)\n")
+	addDumpTest(nm2, "(*"+m2t+")(nil)\n")
 	addDumpTest(nilMap2, m2t+"(nil)\n")
 
 	// Map with interface keys and values.
@@ -491,7 +491,7 @@ func addMapDumpTests() {
 	addDumpTest(m3, m3t+m3s+"\n")
 	addDumpTest(pm3, "&"+m3t+m3s+"\n")
 	addDumpTest(&pm3, "&&"+m3t+m3s+"\n")
-	addDumpTest(nm3, "*"+m3t+"(nil)\n")
+	addDumpTest(nm3, "(*"+m3t+")(nil)\n")
 	addDumpTest(nilMap3, m3t+"(nil)\n")
 
 	// Map with nil interface value.
@@ -507,7 +507,7 @@ func addMapDumpTests() {
 	addDumpTest(m4, m4t+m4s+"\n")
 	addDumpTest(pm4, "&"+m4t+m4s+"\n")
 	addDumpTest(&pm4, "&&"+m4t+m4s+"\n")
-	addDumpTest(nm4, "*"+m4t+"(nil)\n")
+	addDumpTest(nm4, "(*"+m4t+")(nil)\n")
 	addDumpTest(nilMap4, m4t+"(nil)\n")
 }
 
@@ -527,7 +527,7 @@ func addStructDumpTests() {
 	addDumpTest(v, vt+vs+"\n")
 	addDumpTest(pv, "&"+vt+vs+"\n")
 	addDumpTest(&pv, "&&"+vt+vs+"\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Struct that contains another struct.
 	type s2 struct {
@@ -546,7 +546,7 @@ func addStructDumpTests() {
 	addDumpTest(v2, v2t+v2s+"\n")
 	addDumpTest(pv2, "&"+v2t+v2s+"\n")
 	addDumpTest(&pv2, "&&"+v2t+v2s+"\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 
 	// Struct that contains custom type with Stringer pointer interface via both
 	// exported and unexported fields.
@@ -563,7 +563,7 @@ func addStructDumpTests() {
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s+"\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 
 	// Struct that contains embedded struct and field to same struct.
 	e := embed{"embedstr"}
@@ -577,7 +577,7 @@ func addStructDumpTests() {
 	addDumpTest(v4, v4t+v4s+"\n")
 	addDumpTest(pv4, "&"+v4t+v4s+"\n")
 	addDumpTest(&pv4, "&&"+v4t+v4s+"\n")
-	addDumpTest(nv4, "*"+v4t+"(nil)\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 }
 
 func addUintptrDumpTests() {
@@ -600,7 +600,7 @@ func addUintptrDumpTests() {
 	addDumpTest(v2, v2t+v2s+"\n")
 	addDumpTest(pv2, "&"+v2t+v2s+"\n")
 	addDumpTest(&pv2, "&&"+v2t+v2s+"\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 }
 
 func addUnsafePointerDumpTests() {
@@ -613,7 +613,7 @@ func addUnsafePointerDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Address of real variable.
 	i := 1
@@ -624,7 +624,7 @@ func addUnsafePointerDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 }
 
 func addChanDumpTests() {
@@ -637,7 +637,7 @@ func addChanDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Real channel.
 	v2 := make(chan int)
@@ -659,7 +659,7 @@ func addFuncDumpTests() {
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// Function with param and no returns.
 	v2 := TestDump
@@ -670,7 +670,7 @@ func addFuncDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
-	addDumpTest(nv2, "*"+v2t+"(nil)\n")
+	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
 
 	// Function with multiple params and multiple returns.
 	var v3 = func(i int, s string) (b bool, err error) {
@@ -683,7 +683,7 @@ func addFuncDumpTests() {
 	addDumpTest(v3, v3t+"("+v3s+")\n")
 	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
 	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
-	addDumpTest(nv3, "*"+v3t+"(nil)\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
 }
 
 func addCircularDumpTests() {
@@ -695,8 +695,8 @@ func addCircularDumpTests() {
 	v.c = &v
 	pv := &v
 	vt := "utter_test.circular"
-	vs := "{\n c: &" + vt + "{\n  c: *" + vt + "(<already shown>),\n },\n}"
-	vs2 := "{\n c: *" + vt + "(<already shown>),\n}"
+	vs := "{\n c: &" + vt + "{\n  c: (*" + vt + ")(<already shown>),\n },\n}"
+	vs2 := "{\n c: (*" + vt + ")(<already shown>),\n}"
 	addDumpTest(v, vt+vs+"\n")
 	addDumpTest(pv, "&"+vt+vs2+"\n")
 	addDumpTest(&pv, "&&"+vt+vs2+"\n")
@@ -710,8 +710,8 @@ func addCircularDumpTests() {
 	v2t2 := "utter_test.xref2"
 	v2s := "{\n ps2: &" + v2t2 +
 		"{\n  ps1: &" + v2t +
-		"{\n   ps2: *" + v2t2 + "(<already shown>),\n  },\n },\n}"
-	v2s2 := "{\n ps2: &" + v2t2 + "{\n  ps1: *" + v2t + "(<already shown>),\n },\n}"
+		"{\n   ps2: (*" + v2t2 + ")(<already shown>),\n  },\n },\n}"
+	v2s2 := "{\n ps2: &" + v2t2 + "{\n  ps1: (*" + v2t + ")(<already shown>),\n },\n}"
 	addDumpTest(v2, v2t+v2s+"\n")
 	addDumpTest(pv2, "&"+v2t+v2s2+"\n")
 	addDumpTest(&pv2, "&&"+v2t+v2s2+"\n")
@@ -729,10 +729,10 @@ func addCircularDumpTests() {
 	v3s := "{\n ps2: &" + v3t2 +
 		"{\n  ps3: &" + v3t3 +
 		"{\n   ps1: &" + v3t +
-		"{\n    ps2: *" + v3t2 + "(<already shown>),\n   },\n  },\n },\n}"
+		"{\n    ps2: (*" + v3t2 + ")(<already shown>),\n   },\n  },\n },\n}"
 	v3s2 := "{\n ps2: &" + v3t2 +
 		"{\n  ps3: &" + v3t3 +
-		"{\n   ps1: *" + v3t + "(<already shown>),\n  },\n },\n}"
+		"{\n   ps1: (*" + v3t + ")(<already shown>),\n  },\n },\n}"
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s2+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s2+"\n")
