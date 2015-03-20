@@ -63,8 +63,8 @@ var Config = ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}
 
 // Fdump formats and displays the passed arguments to io.Writer w.  It formats
 // exactly the same as Dump.
-func (c *ConfigState) Fdump(w io.Writer, a ...interface{}) {
-	fdump(c, w, a...)
+func (c *ConfigState) Fdump(w io.Writer, a interface{}) {
+	fdump(c, w, a)
 }
 
 /*
@@ -85,15 +85,15 @@ of c.  See ConfigState for options documentation.
 See Fdump if you would prefer dumping to an arbitrary io.Writer or Sdump to
 get the formatted result as a string.
 */
-func (c *ConfigState) Dump(a ...interface{}) {
-	fdump(c, os.Stdout, a...)
+func (c *ConfigState) Dump(a interface{}) {
+	fdump(c, os.Stdout, a)
 }
 
 // Sdump returns a string with the passed arguments formatted exactly the same
 // as Dump.
-func (c *ConfigState) Sdump(a ...interface{}) string {
+func (c *ConfigState) Sdump(a interface{}) string {
 	var buf bytes.Buffer
-	fdump(c, &buf, a...)
+	fdump(c, &buf, a)
 	return buf.String()
 }
 

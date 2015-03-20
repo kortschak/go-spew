@@ -41,9 +41,9 @@ To dump a variable with full newlines, indentation, type, and pointer
 information use Dump, Fdump, or Sdump:
 
 ```Go
-utter.Dump(myVar1, myVar2, ...)
-utter.Fdump(someWriter, myVar1, myVar2, ...)
-str := utter.Sdump(myVar1, myVar2, ...)
+utter.Dump(myVar1)
+utter.Fdump(someWriter, myVar1)
+str := utter.Sdump(myVar1)
 ```
 
 ## Sample Dump Output
@@ -58,6 +58,9 @@ main.Foo{
   string("one"): bool(true),
  },
 }
+```
+
+```
 []uint8{
  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, // |........|
  0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, // |....... |
