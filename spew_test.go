@@ -54,11 +54,10 @@ func (f utterFunc) String() string {
 // utterTest is used to describe a test to be performed against the public
 // functions of the utter package or ConfigState.
 type utterTest struct {
-	cs     *utter.ConfigState
-	f      utterFunc
-	format string
-	in     interface{}
-	want   string
+	cs   *utter.ConfigState
+	f    utterFunc
+	in   interface{}
+	want string
 }
 
 // utterTests houses the tests to be performed against the public functions of
@@ -92,6 +91,14 @@ func initSpewTests() {
 	// Config states with various settings.
 	scsDefault := utter.NewDefaultConfig()
 
+	// Byte slice without comments.
+	noComDefault := utter.NewDefaultConfig()
+	noComDefault.CommentBytes = false
+
+	// Byte slice with 8 columns.
+	bs8Default := utter.NewDefaultConfig()
+	bs8Default.BytesWidth = 8
+
 	// depthTester is used to test max depth handling for structs, array, slices
 	// and maps.
 	type depthTester struct {
@@ -102,9 +109,16 @@ func initSpewTests() {
 	}
 
 	utterTests = []utterTest{
-		{scsDefault, fCSFdump, "", int8(127), "int8(127)\n"},
-		{scsDefault, fCSSdump, "", uint8(64), "uint8(64)\n"},
-		{scsDefault, fSdump, "", complex(-10, -20), "complex128(-10-20i)\n"},
+		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
+		{scsDefault, fCSSdump, uint8(64), "uint8(64)\n"},
+		{scsDefault, fSdump, complex(-10, -20), "complex128(-10-20i)\n"},
+		{noComDefault, fCSFdump, []byte{1, 2, 3, 4, 5, 0},
+			"[]uint8{\n 0x01, 0x02, 0x03, 0x04, 0x05, 0x00,\n}\n",
+		},
+		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
+			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x03, 0x04, 0x05, 0x00,                         // |....|\n}\n",
+		},
 	}
 }
 
@@ -133,7 +147,7 @@ func TestSpew(t *testing.T) {
 		}
 		s := buf.String()
 		if test.want != s {
-			t.Errorf("ConfigState #%d\n got: %s want: %s", i, s, test.want)
+			t.Errorf("ConfigState #%d\n got: %q\nwant: %q", i, s, test.want)
 			continue
 		}
 	}
