@@ -14,10 +14,9 @@ pseudo-code representations of pointer-based structures will require subsequent
 processing.
 
 utter implements a deep pretty printer for Go data structures to aid in
-debugging.  A comprehensive suite of tests with 100% test coverage is provided
-to ensure proper functionality.  See `test_coverage.txt` for the gocov coverage
-report.  utter is licensed under the liberal ISC license, so it may be used in
-open source or commercial projects.
+snapshot creation.  A comprehensive suite of tests with 100% test coverage is provided
+to ensure proper functionality.  utter is licensed under the liberal ISC license,
+so it may be used in open source or commercial projects.
 
 ## Documentation
 
