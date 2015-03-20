@@ -36,7 +36,7 @@ func addCgoDumpTests() {
 	addDumpTest(v, "&"+vt+"("+vs+")\n")
 	addDumpTest(pv, "&&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&&"+vt+"("+vs+")\n")
-	addDumpTest(nv, "*"+vt+"(nil)\n")
+	addDumpTest(nv, "(*"+vt+")(nil)\n")
 
 	// C char array.
 	v2 := testdata.GetCgoCharArray()
