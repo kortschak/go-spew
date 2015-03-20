@@ -2,9 +2,7 @@ utter
 =====
 
 [![Build Status](https://travis-ci.org/kortschak/utter.png?branch=master)]
-(https://travis-ci.org/kortschak/utter) [![Coverage Status]
-(https://coveralls.io/repos/kortschak/utter/badge.png?branch=master)]
-(https://coveralls.io/r/kortschak/utter?branch=master)
+(https://travis-ci.org/kortschak/utter) [![Coverage Status](https://coveralls.io/repos/kortschak/utter/badge.png?branch=master)](https://coveralls.io/r/kortschak/utter?branch=master)
 
 utter is a fork of the outstanding [go-spew tool](https://github.com/davecgh/go-spew).
 Where go-spew is an aid for debugging, providing annotation of dumped datastructures,
