@@ -150,7 +150,7 @@ func addUintDumpTests() {
 	nv := (*uint8)(nil)
 	pv := &v
 	vt := "uint8"
-	vs := "255"
+	vs := "0xff"
 	addDumpTest(v, vt+"("+vs+")\n")
 	addDumpTest(pv, "&"+vt+"("+vs+")\n")
 	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
@@ -161,7 +161,7 @@ func addUintDumpTests() {
 	nv2 := (*uint16)(nil)
 	pv2 := &v2
 	v2t := "uint16"
-	v2s := "65535"
+	v2s := "0xffff"
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
@@ -172,7 +172,7 @@ func addUintDumpTests() {
 	nv3 := (*uint32)(nil)
 	pv3 := &v3
 	v3t := "uint32"
-	v3s := "4294967295"
+	v3s := "0xffffffff"
 	addDumpTest(v3, v3t+"("+v3s+")\n")
 	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
 	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
@@ -183,7 +183,7 @@ func addUintDumpTests() {
 	nv4 := (*uint64)(nil)
 	pv4 := &v4
 	v4t := "uint64"
-	v4s := "18446744073709551615"
+	v4s := "0xffffffffffffffff"
 	addDumpTest(v4, v4t+"("+v4s+")\n")
 	addDumpTest(pv4, "&"+v4t+"("+v4s+")\n")
 	addDumpTest(&pv4, "&&"+v4t+"("+v4s+")\n")
@@ -194,7 +194,7 @@ func addUintDumpTests() {
 	nv5 := (*uint)(nil)
 	pv5 := &v5
 	v5t := "uint"
-	v5s := "4294967295"
+	v5s := "0xffffffff"
 	addDumpTest(v5, v5t+"("+v5s+")\n")
 	addDumpTest(pv5, "&"+v5t+"("+v5s+")\n")
 	addDumpTest(&pv5, "&&"+v5t+"("+v5s+")\n")
@@ -328,7 +328,7 @@ func addArrayDumpTests() {
 	v3t2 := "string"
 	v3t3 := "int"
 	v3t4 := "uint"
-	v3s := "{\n " + v3t2 + "(\"one\"),\n " + v3t3 + "(2),\n " + v3t4 + "(3),\n}"
+	v3s := "{\n " + v3t2 + "(\"one\"),\n " + v3t3 + "(2),\n " + v3t4 + "(0x3),\n}"
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s+"\n")
@@ -391,7 +391,7 @@ func addSliceDumpTests() {
 	v3t3 := "int"
 	v3t4 := "uint"
 	v3t5 := "interface{}"
-	v3s := "{\n " + v3t2 + "(\"one\"),\n " + v3t3 + "(2),\n " + v3t4 + "(3),\n " + v3t5 + "(nil),\n}"
+	v3s := "{\n " + v3t2 + "(\"one\"),\n " + v3t3 + "(2),\n " + v3t4 + "(0x3),\n " + v3t5 + "(nil),\n}"
 	addDumpTest(v3, v3t+v3s+"\n")
 	addDumpTest(pv3, "&"+v3t+v3s+"\n")
 	addDumpTest(&pv3, "&&"+v3t+v3s+"\n")
@@ -458,7 +458,7 @@ func addInterfaceDumpTests() {
 	v2 := interface{}(uint16(65535))
 	pv2 := &v2
 	v2t := "uint16"
-	v2s := "65535"
+	v2s := "0xffff"
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
@@ -545,7 +545,7 @@ func addStructDumpTests() {
 	vt := "utter_test.s1"
 	vt2 := "int8"
 	vt3 := "uint8"
-	vs := "{\n a: " + vt2 + "(127),\n b: " + vt3 + "(255),\n}"
+	vs := "{\n a: " + vt2 + "(127),\n b: " + vt3 + "(0xff),\n}"
 	addDumpTest(v, vt+vs+"\n")
 	addDumpTest(pv, "&"+vt+vs+"\n")
 	addDumpTest(&pv, "&&"+vt+vs+"\n")
@@ -564,7 +564,7 @@ func addStructDumpTests() {
 	v2t3 := "int8"
 	v2t4 := "uint8"
 	v2t5 := "bool"
-	v2s := "{\n s1: " + v2t2 + "{\n  a: " + v2t3 + "(127),\n  b: " + v2t4 + "(255),\n },\n b: " + v2t5 + "(true),\n}"
+	v2s := "{\n s1: " + v2t2 + "{\n  a: " + v2t3 + "(127),\n  b: " + v2t4 + "(0xff),\n },\n b: " + v2t5 + "(true),\n}"
 	addDumpTest(v2, v2t+v2s+"\n")
 	addDumpTest(pv2, "&"+v2t+v2s+"\n")
 	addDumpTest(&pv2, "&&"+v2t+v2s+"\n")

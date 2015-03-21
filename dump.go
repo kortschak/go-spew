@@ -279,7 +279,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 		printInt(d.w, v.Int(), 10)
 
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
-		printUint(d.w, v.Uint(), 10)
+		d.w.Write(hexZeroBytes)
+		printUint(d.w, v.Uint(), 16)
 
 	case reflect.Float32:
 		printFloat(d.w, v.Float(), 32, !wantType)

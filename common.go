@@ -154,6 +154,7 @@ var (
 	openParenBytes        = []byte("(")
 	closeParenBytes       = []byte(")")
 	nilBytes              = []byte("nil")
+	hexZeroBytes          = []byte("0x")
 	zeroBytes             = []byte("0")
 	pointZeroBytes        = []byte(".0")
 	circularBytes         = []byte("(<already shown>)")

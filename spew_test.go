@@ -118,7 +118,7 @@ func initSpewTests() {
 
 	utterTests = []utterTest{
 		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
-		{scsDefault, fCSSdump, uint8(64), "uint8(64)\n"},
+		{scsDefault, fCSSdump, uint8(64), "uint8(0x40)\n"},
 		{scsDefault, fSdump, complex(-10, -20), "complex128(-10-20i)\n"},
 		{noComDefault, fCSFdump, []byte{1, 2, 3, 4, 5, 0},
 			"[]uint8{\n 0x01, 0x02, 0x03, 0x04, 0x05, 0x00,\n}\n",
