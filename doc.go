@@ -99,7 +99,7 @@ shown here.
 	main.Foo{
 	 unexportedField: &main.Bar{
 	  flag: main.Flag(1),
-	  data: uintptr(nil),
+	  data: uintptr(0),
 	 },
 	 ExportedField: map[interface{}]interface{}{
 	  string("one"): bool(true),

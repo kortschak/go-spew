@@ -585,10 +585,10 @@ func addUintptrDumpTests() {
 	v := uintptr(0)
 	pv := &v
 	vt := "uintptr"
-	vs := "(nil)"
-	addDumpTest(v, vt+vs+"\n")
-	addDumpTest(pv, "&"+vt+vs+"\n")
-	addDumpTest(&pv, "&&"+vt+vs+"\n")
+	vs := "0"
+	addDumpTest(v, vt+"("+vs+")\n")
+	addDumpTest(pv, "&"+vt+"("+vs+")\n")
+	addDumpTest(&pv, "&&"+vt+"("+vs+")\n")
 
 	// Address of real variable.
 	i := 1

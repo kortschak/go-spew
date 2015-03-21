@@ -364,10 +364,10 @@ func (d *dumpState) dump(v reflect.Value) {
 		d.w.Write(closeBraceBytes)
 
 	case reflect.Uintptr:
-		printHexPtr(d.w, uintptr(v.Uint()))
+		printHexPtr(d.w, uintptr(v.Uint()), false)
 
 	case reflect.UnsafePointer, reflect.Chan, reflect.Func:
-		printHexPtr(d.w, v.Pointer())
+		printHexPtr(d.w, v.Pointer(), true)
 
 	// There were not any other types at the time this code was written, but
 	// fall back to letting the default fmt package handle it in case any new

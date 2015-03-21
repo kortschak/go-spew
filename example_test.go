@@ -107,7 +107,7 @@ func ExampleDump() {
 	//  utter_test.Foo{
 	//   unexportedField: utter_test.Bar{
 	//    flag: utter_test.Flag(1),
-	//    data: uintptr(nil),
+	//    data: uintptr(0),
 	//   },
 	//   ExportedField: map[interface{}]interface{}{
 	//    string("one"): bool(true),
@@ -162,7 +162,7 @@ func ExampleConfigState_Dump() {
 	// utter_test.Foo{
 	// 	unexportedField: utter_test.Bar{
 	// 		flag: utter_test.Flag(1),
-	// 		data: uintptr(nil),
+	// 		data: uintptr(0),
 	// 	},
 	// 	ExportedField: map[interface{}]interface{}{
 	// 		string("one"): bool(true),
@@ -171,7 +171,7 @@ func ExampleConfigState_Dump() {
 	// utter_test.Foo{
 	//  unexportedField: utter_test.Bar{
 	//   flag: utter_test.Flag(1),
-	//   data: uintptr(nil),
+	//   data: uintptr(0),
 	//  },
 	//  ExportedField: map[interface{}]interface{}{
 	//   string("one"): bool(true),

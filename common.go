@@ -153,6 +153,7 @@ var (
 	openParenBytes        = []byte("(")
 	closeParenBytes       = []byte(")")
 	nilBytes              = []byte("nil")
+	zeroBytes             = []byte("0")
 	circularBytes         = []byte("(<already shown>)")
 	invalidAngleBytes     = []byte("<invalid>")
 )
@@ -238,11 +239,15 @@ func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
 
 // printHexPtr outputs a uintptr formatted as hexadecimal with a leading '0x'
 // prefix to Writer w.
-func printHexPtr(w io.Writer, p uintptr) {
+func printHexPtr(w io.Writer, p uintptr, isPointer bool) {
 	// Null pointer.
 	num := uint64(p)
 	if num == 0 {
-		w.Write(nilBytes)
+		if isPointer {
+			w.Write(nilBytes)
+		} else {
+			w.Write(zeroBytes)
+		}
 		return
 	}
 
