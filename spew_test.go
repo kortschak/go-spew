@@ -99,6 +99,10 @@ func initSpewTests() {
 	bs8Default := utter.NewDefaultConfig()
 	bs8Default.BytesWidth = 8
 
+	// Ignore unexported fields.
+	ignUnexDefault := utter.NewDefaultConfig()
+	ignUnexDefault.IgnoreUnexported = true
+
 	// depthTester is used to test max depth handling for structs, array, slices
 	// and maps.
 	type depthTester struct {
@@ -118,6 +122,9 @@ func initSpewTests() {
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
 			" 0x03, 0x04, 0x05, 0x00,                         // |....|\n}\n",
+		},
+		{ignUnexDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}},
+			"utter_test.Foo{\n ExportedField: map[interface{}]interface{}{\n  string(\"one\"): bool(true),\n },\n}\n",
 		},
 	}
 }

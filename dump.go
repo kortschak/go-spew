@@ -348,8 +348,11 @@ func (d *dumpState) dump(v reflect.Value) {
 		vt := v.Type()
 		numFields := v.NumField()
 		for i := 0; i < numFields; i++ {
-			d.indent()
 			vtf := vt.Field(i)
+			if d.cs.IgnoreUnexported && vtf.PkgPath != "" {
+				continue
+			}
+			d.indent()
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true

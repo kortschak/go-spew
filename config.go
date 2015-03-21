@@ -49,6 +49,10 @@ type ConfigState struct {
 	// comment annotations.
 	CommentBytes bool
 
+	// IgnoreUnexported specifies that unexported struct fields should be
+	// ignored during a dump/
+	IgnoreUnexported bool
+
 	// SortKeys specifies map keys should be sorted before being printed. Use
 	// this to have a more deterministic, diffable output.  Note that only
 	// native types (bool, int, uint, floats, uintptr and string) are supported
@@ -102,6 +106,7 @@ func (c *ConfigState) Sdump(a interface{}) string {
 // 	Indent: " "
 // 	BytesWidth: 16
 // 	CommentBytes: true
+//  IgnoreUnexported: false
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
 	return &ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}

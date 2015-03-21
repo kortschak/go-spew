@@ -91,6 +91,9 @@ options. See the ConfigState documentation for more details.
 	Specifies whether ASCII comment annotations are attached to byte
 	slice and array dumps.
 
+* IgnoreUnexported
+	Specifies that unexported fields should be ignored.
+
 * SortKeys
 	Specifies map keys should be sorted before being printed. Use
 	this to have a more deterministic, diffable output.  Note that
