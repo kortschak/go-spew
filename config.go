@@ -53,9 +53,9 @@ type ConfigState struct {
 	// ignored during a dump.
 	IgnoreUnexported bool
 
-	// ElideBuiltin specifies that builtin types should not be printed in
-	// a dump.
-	ElideBuiltin bool
+	// ElideDefaultTypes specifies that default built-in types' (int, float64,
+	// string and bool) type information should not be printed in a dump.
+	ElideDefaultTypes bool
 
 	// SortKeys specifies map keys should be sorted before being printed. Use
 	// this to have a more deterministic, diffable output.  Note that only
@@ -111,7 +111,7 @@ func (c *ConfigState) Sdump(a interface{}) string {
 // 	BytesWidth: 16
 // 	CommentBytes: true
 //  IgnoreUnexported: false
-//  ElideBuiltin: false
+//  ElideDefaultTypes: false
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
 	return &ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}

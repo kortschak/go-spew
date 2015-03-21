@@ -248,7 +248,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 
 	typ := v.Type()
 	builtin := !wasPtr && typ.PkgPath() == "" && typ.Name() != ""
-	wantType := !d.cs.ElideBuiltin || !builtin
+	defType := builtin && (kind == reflect.Int || kind == reflect.Float64 || kind == reflect.String || kind == reflect.Bool)
+	wantType := !d.cs.ElideDefaultTypes || !defType
 
 	// Print type information unless already handled elsewhere.
 	if !d.ignoreNextType {
