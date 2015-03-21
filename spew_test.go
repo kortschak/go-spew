@@ -103,6 +103,10 @@ func initSpewTests() {
 	ignUnexDefault := utter.NewDefaultConfig()
 	ignUnexDefault.IgnoreUnexported = true
 
+	// Elide builtin types.
+	elideDefault := utter.NewDefaultConfig()
+	elideDefault.ElideBuiltin = true
+
 	// depthTester is used to test max depth handling for structs, array, slices
 	// and maps.
 	type depthTester struct {
@@ -125,6 +129,13 @@ func initSpewTests() {
 		},
 		{ignUnexDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}},
 			"utter_test.Foo{\n ExportedField: map[interface{}]interface{}{\n  string(\"one\"): bool(true),\n },\n}\n",
+		},
+		{elideDefault, fCSFdump, float64(1), "1.0\n"},
+		{elideDefault, fCSFdump, float32(1), "1.0\n"},
+		{elideDefault, fCSFdump, int(1), "1\n"},
+		{elideDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}}, "utter_test.Foo{\n" +
+			" unexportedField: utter_test.Bar{\n  flag: utter_test.Flag(1),\n  data: 0,\n },\n" +
+			" ExportedField: map[interface{}]interface{}{\n  \"one\": true,\n },\n}\n",
 		},
 	}
 }

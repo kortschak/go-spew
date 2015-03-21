@@ -245,6 +245,28 @@ func addFloatDumpTests() {
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
 	addDumpTest(nv2, "(*"+v2t+")(nil)\n")
+
+	// Standard float32 - integral value.
+	v3 := float32(3)
+	nv3 := (*float32)(nil)
+	pv3 := &v3
+	v3t := "float32"
+	v3s := "3"
+	addDumpTest(v3, v3t+"("+v3s+")\n")
+	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
+	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
+	addDumpTest(nv3, "(*"+v3t+")(nil)\n")
+
+	// Standard float64 - integral value.
+	v4 := float64(3)
+	nv4 := (*float64)(nil)
+	pv4 := &v4
+	v4t := "float64"
+	v4s := "3"
+	addDumpTest(v4, v4t+"("+v4s+")\n")
+	addDumpTest(pv4, "&"+v4t+"("+v4s+")\n")
+	addDumpTest(&pv4, "&&"+v4t+"("+v4s+")\n")
+	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
 }
 
 func addComplexDumpTests() {

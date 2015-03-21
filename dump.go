@@ -145,7 +145,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	default:
 		d.ignoreNextType = true
-		d.dump(ve)
+		d.dump(ve, true)
 	}
 }
 
@@ -222,7 +222,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
-		d.dump(d.unpackValue(v.Index(i)))
+		d.dump(d.unpackValue(v.Index(i)), false)
 		d.w.Write(commaNewlineBytes)
 	}
 }
@@ -231,7 +231,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and annotated.
-func (d *dumpState) dump(v reflect.Value) {
+func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
@@ -246,18 +246,26 @@ func (d *dumpState) dump(v reflect.Value) {
 		return
 	}
 
+	typ := v.Type()
+	builtin := !wasPtr && typ.PkgPath() == "" && typ.Name() != ""
+	wantType := !d.cs.ElideBuiltin || !builtin
+
 	// Print type information unless already handled elsewhere.
 	if !d.ignoreNextType {
 		d.indent()
-		typeBytes := []byte(v.Type().String())
-		d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+		if wantType {
+			typeBytes := []byte(v.Type().String())
+			d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+		}
 	}
 	d.ignoreNextType = false
 
-	switch kind {
-	case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
-	default:
-		d.w.Write(openParenBytes)
+	if wantType {
+		switch kind {
+		case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
+		default:
+			d.w.Write(openParenBytes)
+		}
 	}
 	switch kind {
 	case reflect.Invalid:
@@ -274,10 +282,10 @@ func (d *dumpState) dump(v reflect.Value) {
 		printUint(d.w, v.Uint(), 10)
 
 	case reflect.Float32:
-		printFloat(d.w, v.Float(), 32)
+		printFloat(d.w, v.Float(), 32, !wantType)
 
 	case reflect.Float64:
-		printFloat(d.w, v.Float(), 64)
+		printFloat(d.w, v.Float(), 64, !wantType)
 
 	case reflect.Complex64:
 		printComplex(d.w, v.Complex(), 32)
@@ -332,10 +340,10 @@ func (d *dumpState) dump(v reflect.Value) {
 			sortValues(keys)
 		}
 		for _, key := range keys {
-			d.dump(d.unpackValue(key))
+			d.dump(d.unpackValue(key), false)
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.MapIndex(key)))
+			d.dump(d.unpackValue(v.MapIndex(key)), false)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -356,7 +364,7 @@ func (d *dumpState) dump(v reflect.Value) {
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.Field(i)))
+			d.dump(d.unpackValue(v.Field(i)), false)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -379,10 +387,12 @@ func (d *dumpState) dump(v reflect.Value) {
 			fmt.Fprintf(d.w, "%v", v.String())
 		}
 	}
-	switch kind {
-	case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
-	default:
-		d.w.Write(closeParenBytes)
+	if wantType {
+		switch kind {
+		case reflect.Invalid, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
+		default:
+			d.w.Write(closeParenBytes)
+		}
 	}
 }
 
@@ -400,7 +410,7 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 
 	d := dumpState{w: w, cs: cs}
 	d.pointers = make(map[uintptr]int)
-	d.dump(reflect.ValueOf(a))
+	d.dump(reflect.ValueOf(a), false)
 	d.w.Write(newlineBytes)
 }
 

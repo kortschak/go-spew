@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"reflect"
 	"sort"
 	"strconv"
@@ -154,6 +155,7 @@ var (
 	closeParenBytes       = []byte(")")
 	nilBytes              = []byte("nil")
 	zeroBytes             = []byte("0")
+	pointZeroBytes        = []byte(".0")
 	circularBytes         = []byte("(<already shown>)")
 	invalidAngleBytes     = []byte("<invalid>")
 )
@@ -182,8 +184,11 @@ func printUint(w io.Writer, val uint64, base int) {
 
 // printFloat outputs a floating point value using the specified precision,
 // which is expected to be 32 or 64bit, to Writer w.
-func printFloat(w io.Writer, val float64, precision int) {
+func printFloat(w io.Writer, val float64, precision int, typeElided bool) {
 	w.Write([]byte(strconv.FormatFloat(val, 'g', -1, precision)))
+	if typeElided && val == math.Floor(val) {
+		w.Write(pointZeroBytes)
+	}
 }
 
 // printComplex outputs a complex value using the specified float precision
