@@ -94,9 +94,9 @@ options. See the ConfigState documentation for more details.
 * IgnoreUnexported
 	Specifies that unexported fields should be ignored.
 
-* ElideBuiltin
-	ElideBuiltin specifies that builtin types should not be printed in
-	a dump.
+* ElideDefaultTypes
+	ElideDefaultTypes specifies that default built-in types' (int, float64,
+	string and bool) type information should not be printed in a dump.
 
 * SortKeys
 	Specifies map keys should be sorted before being printed. Use
