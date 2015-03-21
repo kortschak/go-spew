@@ -230,7 +230,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 // dump is the main workhorse for dumping a value.  It uses the passed reflect
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
-// are detected and handled properly.
+// are detected and annotated.
 func (d *dumpState) dump(v reflect.Value) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
@@ -423,8 +423,8 @@ following features over the built-in printing facilities provided by the fmt
 package:
 
 	* Pointers are dereferenced and followed
-	* Circular data structures are detected and handled properly
-	* Byte arrays and slices are dumped in a way similar to the hexdump -C command
+	* Circular data structures are detected and annotated
+	* Byte arrays and slices are dumped in a way similar to the hexdump -C command,
 	  which includes byte values in hex, and ASCII output
 
 The configuration options are controlled by an exported package global,

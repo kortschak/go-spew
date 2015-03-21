@@ -11,10 +11,9 @@ code. An utter dump will not construct cyclic structure literals and a number of
 pseudo-code representations of pointer-based structures will require subsequent
 processing.
 
-utter implements a deep pretty printer for Go data structures to aid in
-snapshot creation.  A comprehensive suite of tests with near 100% test coverage is provided
-to ensure proper functionality.  utter is licensed under the liberal ISC license,
-so it may be used in open source or commercial projects.
+A comprehensive suite of tests with near 100% test coverage is provided to ensure
+proper functionality.  utter is licensed under the liberal ISC license, so it may
+be used in open source or commercial projects.
 
 ## Documentation
 

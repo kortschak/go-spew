@@ -30,7 +30,7 @@ printing facilities for Go data types are as follows:
 The approache utter allows for dumping Go data structures is less flexible than
 its parent tool. It has just a:
 
-	* Dump style which prints with newlines, customizable indentation
+	* Dump style which prints with newlines and customizable indentation
 
 Quick Start
 
@@ -39,9 +39,9 @@ sections below for further details on formatting and configuration options.
 
 To dump a variable with full newlines, indentation, type, and pointer
 information use Dump, Fdump, or Sdump:
-	utter.Dump(myVar1, myVar2, ...)
-	utter.Fdump(someWriter, myVar1, myVar2, ...)
-	str := utter.Sdump(myVar1, myVar2, ...)
+	utter.Dump(myVar1)
+	utter.Fdump(someWriter, myVar1)
+	str := utter.Sdump(myVar1)
 
 Configuration Options
 
@@ -77,16 +77,16 @@ Dump Usage
 
 Simply call utter.Dump with a list of variables you want to dump:
 
-	utter.Dump(myVar1, myVar2, ...)
+	utter.Dump(myVar1)
 
 You may also call utter.Fdump if you would prefer to output to an arbitrary
 io.Writer.  For example, to dump to standard error:
 
-	utter.Fdump(os.Stderr, myVar1, myVar2, ...)
+	utter.Fdump(os.Stderr, myVar1)
 
 A third option is to call utter.Sdump to get the formatted output as a string:
 
-	str := utter.Sdump(myVar1, myVar2, ...)
+	str := utter.Sdump(myVar1)
 
 Sample Dump Output
 
@@ -103,12 +103,15 @@ shown here.
 	 },
 	}
 
-Byte (and uint8) arrays and slices are displayed uniquely like the hexdump -C
+Byte (and uint8) arrays and slices are displayed uniquely, similar to the hexdump -C
 command as shown.
+
 	[]uint8{
-	 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20 // |............... |
-	 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30 // |!"#$%&'()*+,-./0|
-	 0x31, 0x32,                                                                                    // |12|
+	 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, // |........|
+	 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, // |....... |
+	 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, // |!"#$%&'(|
+	 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, // |)*+,-./0|
+	 0x31, 0x32,                                     // |12|
 	}
 */
 package utter
