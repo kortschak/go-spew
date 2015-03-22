@@ -70,11 +70,11 @@ func (d *dumpState) indent() {
 // unpackValue returns values inside of non-nil interfaces when possible.
 // This is useful for data types like structs, arrays, slices, and maps which
 // can contain varying types packed inside an interface.
-func (d *dumpState) unpackValue(v reflect.Value) reflect.Value {
+func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr bool, static bool) {
 	if v.Kind() == reflect.Interface && !v.IsNil() {
-		return v.Elem()
+		return v.Elem(), v.Kind() == reflect.Ptr, false
 	}
-	return v
+	return v, v.Kind() == reflect.Ptr, true
 }
 
 // dumpPtr handles formatting of pointers by indirecting them as necessary.
@@ -219,7 +219,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
 		vi := v.Index(i)
-		d.dump(d.unpackValue(vi), false, vi.Kind() != reflect.Interface)
+		d.dump(d.unpackValue(vi))
 		d.w.Write(commaNewlineBytes)
 	}
 }
@@ -344,11 +344,10 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 			sortValues(keys)
 		}
 		for _, key := range keys {
-			d.dump(d.unpackValue(key), false, key.Kind() != reflect.Interface)
+			d.dump(d.unpackValue(key))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			val := v.MapIndex(key)
-			d.dump(d.unpackValue(val), false, val.Kind() != reflect.Interface)
+			d.dump(d.unpackValue(v.MapIndex(key)))
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -369,8 +368,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			vi := v.Field(i)
-			d.dump(d.unpackValue(vi), false, vi.Kind() != reflect.Interface)
+			d.dump(d.unpackValue(v.Field(i)))
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
