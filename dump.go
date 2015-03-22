@@ -72,7 +72,7 @@ func (d *dumpState) indent() {
 // can contain varying types packed inside an interface.
 func (d *dumpState) unpackValue(v reflect.Value) reflect.Value {
 	if v.Kind() == reflect.Interface && !v.IsNil() {
-		v = v.Elem()
+		return v.Elem()
 	}
 	return v
 }
@@ -141,7 +141,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	default:
 		d.ignoreNextType = true
-		d.dump(ve, true)
+		d.dump(ve, true, true)
 	}
 }
 
@@ -218,7 +218,8 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
-		d.dump(d.unpackValue(v.Index(i)), false)
+		vi := v.Index(i)
+		d.dump(d.unpackValue(vi), false, vi.Kind() != reflect.Interface)
 		d.w.Write(commaNewlineBytes)
 	}
 }
@@ -227,7 +228,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and annotated.
-func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
+func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
@@ -243,9 +244,14 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 	}
 
 	typ := v.Type()
-	builtin := !wasPtr && typ.PkgPath() == "" && typ.Name() != ""
-	defType := builtin && (kind == reflect.Int || kind == reflect.Float64 || kind == reflect.String || kind == reflect.Bool)
-	wantType := !d.cs.ElideDefaultTypes || !defType
+	wantType := true
+	defType := !wasPtr && isDefault(typ)
+	if d.cs.ElideDefaultTypes {
+		wantType = !defType
+	}
+	if d.cs.ElideImplicitTypes {
+		wantType = wantType && (!(static || defType) || isCompound(kind)) && !(kind == reflect.Interface && v.IsNil())
+	}
 
 	// Print type information unless already handled elsewhere.
 	if !d.ignoreNextType {
@@ -338,10 +344,11 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 			sortValues(keys)
 		}
 		for _, key := range keys {
-			d.dump(d.unpackValue(key), false)
+			d.dump(d.unpackValue(key), false, key.Kind() != reflect.Interface)
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.MapIndex(key)), false)
+			val := v.MapIndex(key)
+			d.dump(d.unpackValue(val), false, val.Kind() != reflect.Interface)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -362,7 +369,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.Field(i)), false)
+			vi := v.Field(i)
+			d.dump(d.unpackValue(vi), false, vi.Kind() != reflect.Interface)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -394,6 +402,20 @@ func (d *dumpState) dump(v reflect.Value, wasPtr bool) {
 	}
 }
 
+// isDefault returns whether the type is a default type absent of context.
+func isDefault(typ reflect.Type) bool {
+	if typ.PkgPath() != "" || typ.Name() == "" {
+		return false
+	}
+	kind := typ.Kind()
+	return kind == reflect.Int || kind == reflect.Float64 || kind == reflect.String || kind == reflect.Bool
+}
+
+// isCompound returns whether the kind is a compound data type.
+func isCompound(kind reflect.Kind) bool {
+	return kind == reflect.Struct || kind == reflect.Slice || kind == reflect.Array || kind == reflect.Map
+}
+
 // fdump is a helper function to consolidate the logic from the various public
 // methods which take varying writers and config states.
 func fdump(cs *ConfigState, w io.Writer, a interface{}) {
@@ -408,7 +430,8 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 
 	d := dumpState{w: w, cs: cs}
 	d.pointers = make(map[uintptr]int)
-	d.dump(reflect.ValueOf(a), false)
+	v := reflect.ValueOf(a)
+	d.dump(v, false, false)
 	d.w.Write(newlineBytes)
 }
 

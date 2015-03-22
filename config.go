@@ -57,6 +57,10 @@ type ConfigState struct {
 	// string and bool) type information should not be printed in a dump.
 	ElideDefaultTypes bool
 
+	// ElideImplicitType specifies that type information defined by context
+	// should not be printed in a dump.
+	ElideImplicitTypes bool
+
 	// SortKeys specifies map keys should be sorted before being printed. Use
 	// this to have a more deterministic, diffable output.  Note that only
 	// native types (bool, int, uint, floats, uintptr and string) are supported
@@ -112,6 +116,7 @@ func (c *ConfigState) Sdump(a interface{}) string {
 // 	CommentBytes: true
 //  IgnoreUnexported: false
 //  ElideDefaultTypes: false
+//  ElideImplicitTypes: false
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
 	return &ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}

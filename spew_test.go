@@ -107,6 +107,15 @@ func initSpewTests() {
 	elideDefault := utter.NewDefaultConfig()
 	elideDefault.ElideDefaultTypes = true
 
+	// Elide implicit types.
+	elideImplDefault := utter.NewDefaultConfig()
+	elideImplDefault.ElideImplicitTypes = true
+
+	// Use both elision methods.
+	elideBothDefault := utter.NewDefaultConfig()
+	elideBothDefault.ElideImplicitTypes = true
+	elideBothDefault.ElideDefaultTypes = true
+
 	// depthTester is used to test max depth handling for structs, array, slices
 	// and maps.
 	type depthTester struct {
@@ -139,6 +148,16 @@ func initSpewTests() {
 		},
 		{elideDefault, fCSFdump, []interface{}{true, 1.0, float32(1), "one", 1, 'a'},
 			"[]interface{}{\n true,\n 1.0,\n float32(1),\n \"one\",\n 1,\n int32(97),\n}\n",
+		},
+		{elideImplDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}}, "utter_test.Foo{\n" +
+			" unexportedField: utter_test.Bar{\n  flag: 1,\n  data: 0,\n },\n" +
+			" ExportedField: map[interface{}]interface{}{\n  \"one\": true,\n },\n}\n",
+		},
+		{elideImplDefault, fCSFdump, map[interface{}]interface{}{"one": nil}, "map[interface{}]interface{}{\n \"one\": nil,\n}\n"},
+		{elideImplDefault, fCSFdump, []float32{1, 2, 3, 4, 5}, "[]float32{\n 1.0,\n 2.0,\n 3.0,\n 4.0,\n 5.0,\n}\n"},
+		{elideBothDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}}, "utter_test.Foo{\n" +
+			" unexportedField: utter_test.Bar{\n  flag: 1,\n  data: 0,\n },\n" +
+			" ExportedField: map[interface{}]interface{}{\n  \"one\": true,\n },\n}\n",
 		},
 	}
 }
