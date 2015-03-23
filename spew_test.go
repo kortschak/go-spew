@@ -95,6 +95,10 @@ func initSpewTests() {
 	noComDefault := utter.NewDefaultConfig()
 	noComDefault.CommentBytes = false
 
+	// Byte slice without comments.
+	comPtrDefault := utter.NewDefaultConfig()
+	comPtrDefault.CommentPointers = true
+
 	// Byte slice with 8 columns.
 	bs8Default := utter.NewDefaultConfig()
 	bs8Default.BytesWidth = 8
@@ -116,6 +120,12 @@ func initSpewTests() {
 		m     map[string]int
 	}
 
+	v := new(int)
+	*v = 10
+	s := struct{ *int }{v}
+	sp := &s
+	spp := &sp
+
 	utterTests = []utterTest{
 		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
 		{scsDefault, fCSSdump, uint8(64), "uint8(0x40)\n"},
@@ -123,6 +133,9 @@ func initSpewTests() {
 		{noComDefault, fCSFdump, []byte{1, 2, 3, 4, 5, 0},
 			"[]uint8{\n 0x01, 0x02, 0x03, 0x04, 0x05, 0x00,\n}\n",
 		},
+		{comPtrDefault, fCSFdump, s, fmt.Sprintf("struct { *int }{\n int: &int /*%p*/ (10),\n}\n", v)},
+		{comPtrDefault, fCSFdump, sp, fmt.Sprintf("&struct { *int } /*%p*/ {\n int: &int /*%p*/ (10),\n}\n", sp, v)},
+		{comPtrDefault, fCSFdump, spp, fmt.Sprintf("&&struct { *int } /*%p->%p*/ {\n int: &int /*%p*/ (10),\n}\n", spp, sp, v)},
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
 			" 0x03, 0x04, 0x05, 0x00,                         // |....|\n}\n",

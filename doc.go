@@ -65,6 +65,10 @@ The following configuration options are available:
 		Specifies whether ASCII comment annotations are attached to byte
 		slice and array dumps.
 
+	* CommentPointers
+		CommentPointer specifies whether pointer information will be added
+		as comments.
+
 	* IgnoreUnexported
 		Specifies that unexported fields should be ignored.
 

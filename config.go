@@ -49,6 +49,10 @@ type ConfigState struct {
 	// comment annotations.
 	CommentBytes bool
 
+	// CommentPointer specifies whether pointer information will be added
+	// as comments.
+	CommentPointers bool
+
 	// IgnoreUnexported specifies that unexported struct fields should be
 	// ignored during a dump.
 	IgnoreUnexported bool
@@ -110,6 +114,7 @@ func (c *ConfigState) Sdump(a interface{}) string {
 // 	Indent: " "
 // 	BytesWidth: 16
 // 	CommentBytes: true
+// 	CommentPointers: false
 //  IgnoreUnexported: false
 //  ElideType: false
 // 	SortKeys: false

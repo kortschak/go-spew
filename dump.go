@@ -87,6 +87,9 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		}
 	}
 
+	// Keep list of all dereferenced pointers to show later.
+	var pointerChain []uintptr
+
 	// Figure out how many levels of indirection there are by dereferencing
 	// pointers and unpacking interfaces down the chain while detecting circular
 	// references.
@@ -101,6 +104,9 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		}
 		indirects++
 		addr := ve.Pointer()
+		if d.cs.CommentPointers {
+			pointerChain = append(pointerChain, addr)
+		}
 		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
 			cycleFound = true
 			indirects--
@@ -127,6 +133,18 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
 	if typeBytes[0] == '*' {
 		d.w.Write(closeParenBytes)
+	}
+
+	// Display pointer information.
+	if len(pointerChain) > 0 {
+		d.w.Write(openCommentBytes)
+		for i, addr := range pointerChain {
+			if i > 0 {
+				d.w.Write(pointerChainBytes)
+			}
+			printHexPtr(d.w, addr, true)
+		}
+		d.w.Write(closeCommentBytes)
 	}
 
 	// Display dereferenced value.
