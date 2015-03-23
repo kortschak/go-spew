@@ -245,12 +245,9 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 
 	typ := v.Type()
 	wantType := true
-	defType := !wasPtr && isDefault(typ)
-	if d.cs.ElideDefaultTypes {
-		wantType = !defType
-	}
-	if d.cs.ElideImplicitTypes {
-		wantType = wantType && (!(static || defType) || isCompound(kind)) && !(kind == reflect.Interface && v.IsNil())
+	if d.cs.ElideType {
+		defType := !wasPtr && isDefault(typ)
+		wantType = (!(static || defType) || isCompound(kind)) && !(kind == reflect.Interface && v.IsNil())
 	}
 
 	// Print type information unless already handled elsewhere.
