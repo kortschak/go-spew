@@ -154,6 +154,9 @@ func initSpewTests() {
 			" ExportedField: map[interface{}]interface{}{\n  \"one\": true,\n },\n}\n",
 		},
 		{elideImplDefault, fCSFdump, map[interface{}]interface{}{"one": nil}, "map[interface{}]interface{}{\n \"one\": nil,\n}\n"},
+		{elideImplDefault, fCSFdump, float32(1), "float32(1)\n"},
+		{elideImplDefault, fCSFdump, float64(1), "1.0\n"},
+		{elideImplDefault, fCSFdump, func() *float64 { f := 1.0; return &f }(), "&float64(1)\n"},
 		{elideImplDefault, fCSFdump, []float32{1, 2, 3, 4, 5}, "[]float32{\n 1.0,\n 2.0,\n 3.0,\n 4.0,\n 5.0,\n}\n"},
 		{elideBothDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}}, "utter_test.Foo{\n" +
 			" unexportedField: utter_test.Bar{\n  flag: 1,\n  data: 0,\n },\n" +

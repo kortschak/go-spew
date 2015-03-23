@@ -141,7 +141,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	default:
 		d.ignoreNextType = true
-		d.dump(ve, true, true)
+		d.dump(ve, true, false)
 	}
 }
 
