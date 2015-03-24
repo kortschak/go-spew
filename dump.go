@@ -70,7 +70,7 @@ func (d *dumpState) indent() {
 // unpackValue returns values inside of non-nil interfaces when possible.
 // This is useful for data types like structs, arrays, slices, and maps which
 // can contain varying types packed inside an interface.
-func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr bool, static bool) {
+func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool) {
 	if v.Kind() == reflect.Interface && !v.IsNil() {
 		return v.Elem(), v.Kind() == reflect.Ptr, false
 	}
