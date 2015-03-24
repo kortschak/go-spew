@@ -58,6 +58,15 @@ The following configuration options are available:
 		String to use for each indentation level for Dump functions.
 		It is a single space by default.  A popular alternative is "\t".
 
+	* NumericWidth
+		NumericWidth specifies the number of columns to use when dumping
+		a numeric slice or array (including bool). Zero specifies all entries
+		on one line.
+
+	* StringWidth
+		StringWidth specifies the number of columns to use when dumping
+		a string slice or array. Zero specifies all entries on one line.
+
 	* BytesWidth
 		Number of byte columns to use when dumping byte slices and arrays.
 

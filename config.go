@@ -41,6 +41,15 @@ type ConfigState struct {
 	// set this to a tab with "\t" or perhaps two spaces with "  ".
 	Indent string
 
+	// NumericWidth specifies the number of columns to use when dumping
+	// a numeric slice or array (including bool). Zero specifies all entries
+	// on one line.
+	NumericWidth int
+
+	// StringWidth specifies the number of columns to use when dumping
+	// a string slice or array. Zero specifies all entries on one line.
+	StringWidth int
+
 	// BytesWidth specifies the number of byte columns to use when dumping a
 	// byte slice or array.
 	BytesWidth int
@@ -71,7 +80,13 @@ type ConfigState struct {
 
 // Config is the active configuration of the top-level functions.
 // The configuration can be changed by modifying the contents of utter.Config.
-var Config = ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}
+var Config = ConfigState{
+	Indent:       " ",
+	NumericWidth: 1,
+	StringWidth:  1,
+	BytesWidth:   16,
+	CommentBytes: true,
+}
 
 // Fdump formats and displays the passed arguments to io.Writer w.  It formats
 // exactly the same as Dump.
@@ -112,6 +127,8 @@ func (c *ConfigState) Sdump(a interface{}) string {
 // NewDefaultConfig returns a ConfigState with the following default settings.
 //
 // 	Indent: " "
+//  NumericWidth: 1,
+//  StringWidth: 1,
 // 	BytesWidth: 16
 // 	CommentBytes: true
 // 	CommentPointers: false
@@ -119,5 +136,11 @@ func (c *ConfigState) Sdump(a interface{}) string {
 //  ElideType: false
 // 	SortKeys: false
 func NewDefaultConfig() *ConfigState {
-	return &ConfigState{Indent: " ", BytesWidth: 16, CommentBytes: true}
+	return &ConfigState{
+		Indent:       " ",
+		NumericWidth: 1,
+		StringWidth:  1,
+		BytesWidth:   16,
+		CommentBytes: true,
+	}
 }

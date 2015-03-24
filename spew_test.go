@@ -103,6 +103,22 @@ func initSpewTests() {
 	bs8Default := utter.NewDefaultConfig()
 	bs8Default.BytesWidth = 8
 
+	// Numeric slice with 4 columns.
+	num4elideDefault := utter.NewDefaultConfig()
+	num4elideDefault.ElideType = true
+	num4elideDefault.NumericWidth = 4
+
+	// String slice with 4 columns.
+	string4elideDefault := utter.NewDefaultConfig()
+	string4elideDefault.ElideType = true
+	string4elideDefault.StringWidth = 4
+
+	// One line slice.
+	oneElideDefault := utter.NewDefaultConfig()
+	oneElideDefault.ElideType = true
+	oneElideDefault.NumericWidth = 0
+	oneElideDefault.StringWidth = 0
+
 	// Ignore unexported fields.
 	ignUnexDefault := utter.NewDefaultConfig()
 	ignUnexDefault.IgnoreUnexported = true
@@ -158,6 +174,38 @@ func initSpewTests() {
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, func() *float64 { f := 1.0; return &f }(), "&float64(1)\n"},
 		{elideTypeDefault, fCSFdump, []float32{1, 2, 3, 4, 5}, "[]float32{\n 1.0,\n 2.0,\n 3.0,\n 4.0,\n 5.0,\n}\n"},
+		{num4elideDefault, fCSFdump, []interface{}{
+			[]int{1, 2, 3, 4},
+			[]uint{1, 2, 3, 4, 5},
+			[]float32{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			[]bool{true, false, true},
+			[]complex128{1 + 1i, 0, 1 - 1i, 2, 4, 8}},
+			"[]interface{}{\n" +
+				" []int{\n  1, 2, 3, 4,\n },\n" +
+				" []uint{\n  0x1, 0x2, 0x3, 0x4,\n  0x5,\n },\n" +
+				" []float32{\n  1.0, 2.0, 3.0, 4.0,\n  5.0, 6.0, 7.0, 8.0,\n  9.0,\n },\n" +
+				" []bool{\n  true, false, true,\n },\n" +
+				" []complex128{\n  1+1i, 0+0i, 1-1i, 2+0i,\n  4+0i, 8+0i,\n },\n}\n",
+		},
+		{num4elideDefault, fCSFdump, [][]int{
+			[]int{1, 2, 3},
+			[]int{1, 2, 3, 4},
+			[]int{1, 2, 3, 4, 5}},
+			"[][]int{\n" +
+				" []int{\n  1, 2, 3,\n },\n" +
+				" []int{\n  1, 2, 3, 4,\n },\n" +
+				" []int{\n  1, 2, 3, 4,\n  5,\n },\n}\n",
+		},
+		{string4elideDefault, fCSFdump, []string{"one", "two", "three", "four", "five"},
+			"[]string{\n \"one\", \"two\", \"three\", \"four\",\n \"five\",\n}\n",
+		},
+		{oneElideDefault, fCSFdump, []interface{}{
+			[]int{1, 2, 3, 4},
+			[]string{"one", "two", "three", "four", "five"}},
+			"[]interface{}{\n" +
+				" []int{1, 2, 3, 4},\n" +
+				" []string{\"one\", \"two\", \"three\", \"four\", \"five\"},\n}\n",
+		},
 	}
 }
 

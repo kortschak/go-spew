@@ -172,11 +172,12 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	var buf []uint8
 	doConvert := false
 	doHexDump := false
+	nPeriod := 1
 	numEntries := v.Len()
 	vt := v.Type().Elem()
 	if numEntries > 0 {
 		vts := vt.String()
-		switch {
+		switch kind := vt.Kind(); {
 		// C types that need to be converted.
 		case cCharRE.MatchString(vts):
 			fallthrough
@@ -187,7 +188,7 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 
 		// Try to use existing uint8 slices and fall back to converting
 		// and copying if that fails.
-		case vt.Kind() == reflect.Uint8:
+		case kind == reflect.Uint8:
 			// We need an addressable interface to convert the type back
 			// into a byte slice.  However, the reflect package won't give
 			// us an interface on certain things like unexported struct
@@ -212,6 +213,12 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 			// The underlying data needs to be converted if it can't
 			// be type asserted to a uint8 slice.
 			doConvert = true
+
+		case isNumeric(kind):
+			nPeriod = d.cs.NumericWidth
+
+		case kind == reflect.String:
+			nPeriod = d.cs.StringWidth
 		}
 
 		// Copy and convert the underlying type if needed.
@@ -227,6 +234,21 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 		}
 	}
 
+	// Prepare indenting for slice.
+	if nPeriod == 0 {
+		d.w.Write(openBraceBytes)
+	} else {
+		d.w.Write(openBraceNewlineBytes)
+	}
+	d.depth++
+	defer func() {
+		d.depth--
+		if nPeriod != 0 {
+			d.indent()
+		}
+		d.w.Write(closeBraceBytes)
+	}()
+
 	// Hexdump the entire slice as needed.
 	if doHexDump {
 		indent := strings.Repeat(d.cs.Indent, d.depth)
@@ -237,8 +259,35 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
 		vi := v.Index(i)
+		if nPeriod == 0 || i%nPeriod != 0 {
+			d.ignoreNextIndent = true
+		}
 		d.dump(d.unpackValue(vi))
+		if nPeriod == 0 || (i%nPeriod != nPeriod-1 && i != numEntries-1) {
+			if i < numEntries-1 {
+				d.w.Write(commaSpaceBytes)
+				continue
+			}
+			break
+		}
 		d.w.Write(commaNewlineBytes)
+	}
+}
+
+// isNumeric returns true for all numeric and boolean kinds.
+func isNumeric(k reflect.Kind) bool {
+	switch k {
+	case reflect.Int, reflect.Uint,
+		reflect.Int8, reflect.Bool,
+		reflect.Int16, reflect.Uint16,
+		reflect.Int32, reflect.Uint32,
+		reflect.Int64, reflect.Uint64,
+		reflect.Float32, reflect.Float64,
+		reflect.Complex64, reflect.Complex128,
+		reflect.Uintptr, reflect.UnsafePointer:
+		return true
+	default:
+		return false
 	}
 }
 
@@ -322,12 +371,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 		fallthrough
 
 	case reflect.Array:
-		d.w.Write(openBraceNewlineBytes)
-		d.depth++
 		d.dumpSlice(v)
-		d.depth--
-		d.indent()
-		d.w.Write(closeBraceBytes)
 
 	case reflect.String:
 		d.w.Write([]byte(strconv.Quote(v.String())))
