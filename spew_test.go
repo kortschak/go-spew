@@ -95,7 +95,7 @@ func initSpewTests() {
 	noComDefault := utter.NewDefaultConfig()
 	noComDefault.CommentBytes = false
 
-	// Byte slice without comments.
+	// Pointer comments.
 	comPtrDefault := utter.NewDefaultConfig()
 	comPtrDefault.CommentPointers = true
 
