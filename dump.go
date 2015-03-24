@@ -173,8 +173,8 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 	doConvert := false
 	doHexDump := false
 	numEntries := v.Len()
+	vt := v.Type().Elem()
 	if numEntries > 0 {
-		vt := v.Index(0).Type()
 		vts := vt.String()
 		switch {
 		// C types that need to be converted.
