@@ -102,17 +102,15 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	// Figure out how many levels of indirection there are by dereferencing
 	// pointers and unpacking interfaces down the chain while detecting circular
 	// references.
-	nilFound := false
-	cycleFound := false
+	var nilFound, cycleFound bool
 	indirects := 0
-	ve := v
-	for ve.Kind() == reflect.Ptr {
-		if ve.IsNil() {
+	for v.Kind() == reflect.Ptr {
+		if v.IsNil() {
 			nilFound = true
 			break
 		}
 		indirects++
-		addr := ve.Pointer()
+		addr := v.Pointer()
 		if d.cs.CommentPointers {
 			pointerChain = append(pointerChain, addr)
 		}
@@ -123,19 +121,19 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		}
 		d.pointers[addr] = d.depth
 
-		ve = ve.Elem()
-		if ve.Kind() == reflect.Interface {
-			if ve.IsNil() {
+		v = v.Elem()
+		if v.Kind() == reflect.Interface {
+			if v.IsNil() {
 				nilFound = true
 				break
 			}
-			ve = ve.Elem()
+			v = v.Elem()
 		}
 	}
 
 	// Display type information.
 	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
-	typeBytes := []byte(ve.Type().String())
+	typeBytes := []byte(v.Type().String())
 	if typeBytes[0] == '*' {
 		d.w.Write(openParenBytes)
 	}
@@ -169,10 +167,10 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	default:
 		d.ignoreNextType = true
 		var addr uintptr
-		if ve.CanAddr() {
-			addr = ve.Addr().Pointer()
+		if v.CanAddr() {
+			addr = v.Addr().Pointer()
 		}
-		d.dump(ve, true, false, addr)
+		d.dump(v, true, false, addr)
 	}
 }
 

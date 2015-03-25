@@ -30,33 +30,32 @@ func (d *dumpState) walkPtr(v reflect.Value) {
 	}
 
 	var nilFound, cycleFound bool
-	ve := v
-	for ve.Kind() == reflect.Ptr {
-		if ve.IsNil() {
+	for v.Kind() == reflect.Ptr {
+		if v.IsNil() {
 			nilFound = true
 			break
 		}
-		addr := ve.Pointer()
+		addr := v.Pointer()
 		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
 			cycleFound = true
 			break
 		}
 		d.pointers[addr] = d.depth
-		d.nodes[addrType{addr, ve.Type()}] = struct{}{}
+		d.nodes[addrType{addr, v.Type()}] = struct{}{}
 
-		ve = ve.Elem()
-		if ve.Kind() == reflect.Interface {
-			if ve.IsNil() {
+		v = v.Elem()
+		if v.Kind() == reflect.Interface {
+			if v.IsNil() {
 				nilFound = true
 				break
 			}
-			ve = ve.Elem()
+			v = v.Elem()
 		}
-		d.nodes[addrType{addr, ve.Type()}] = struct{}{}
+		d.nodes[addrType{addr, v.Type()}] = struct{}{}
 	}
 
 	if !nilFound && !cycleFound {
-		d.walk(ve, true, false, 0)
+		d.walk(v, true, false, 0)
 	}
 }
 
@@ -74,7 +73,7 @@ func (d *dumpState) walkSlice(v reflect.Value) {
 // value to figure out what kind of object we are dealing with and follows it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and escaped from.
-func (d *dumpState) walk(v reflect.Value, wasPtr, static bool, addr uintptr) {
+func (d *dumpState) walk(v reflect.Value, wasPtr, static bool, _ uintptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
