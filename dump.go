@@ -47,11 +47,17 @@ var (
 	cUint8tCharRE = regexp.MustCompile("^.*\\._Ctype_uint8_t$")
 )
 
+type addrType struct {
+	addr uintptr
+	typ  reflect.Type
+}
+
 // dumpState contains information about the state of a dump operation.
 type dumpState struct {
 	w                io.Writer
 	depth            int
 	pointers         map[uintptr]int
+	nodes            map[addrType]struct{}
 	ignoreNextType   bool
 	ignoreNextIndent bool
 	cs               *ConfigState
@@ -70,11 +76,14 @@ func (d *dumpState) indent() {
 // unpackValue returns values inside of non-nil interfaces when possible.
 // This is useful for data types like structs, arrays, slices, and maps which
 // can contain varying types packed inside an interface.
-func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool) {
-	if v.Kind() == reflect.Interface && !v.IsNil() {
-		return v.Elem(), v.Kind() == reflect.Ptr, false
+func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool, addr uintptr) {
+	if v.CanAddr() {
+		addr = v.Addr().Pointer()
 	}
-	return v, v.Kind() == reflect.Ptr, true
+	if v.Kind() == reflect.Interface && !v.IsNil() {
+		return v.Elem(), v.Kind() == reflect.Ptr, false, addr
+	}
+	return v, v.Kind() == reflect.Ptr, true, addr
 }
 
 // dumpPtr handles formatting of pointers by indirecting them as necessary.
@@ -159,7 +168,11 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	default:
 		d.ignoreNextType = true
-		d.dump(ve, true, false)
+		var addr uintptr
+		if ve.CanAddr() {
+			addr = ve.Addr().Pointer()
+		}
+		d.dump(ve, true, false, addr)
 	}
 }
 
@@ -295,7 +308,7 @@ func isNumeric(k reflect.Kind) bool {
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and annotated.
-func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
+func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
@@ -333,6 +346,12 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool) {
 		default:
 			d.w.Write(openParenBytes)
 		}
+	}
+
+	if _, referenced := d.nodes[addrType{addr, typ}]; !wasPtr && referenced {
+		d.w.Write(openCommentBytes)
+		printHexPtr(d.w, addr, true)
+		d.w.Write(closeCommentBytes)
 	}
 	switch kind {
 	case reflect.Invalid:
@@ -488,7 +507,15 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 	d := dumpState{w: w, cs: cs}
 	d.pointers = make(map[uintptr]int)
 	v := reflect.ValueOf(a)
-	d.dump(v, false, false)
+	var addr uintptr
+	if v.CanAddr() {
+		addr = v.Addr().Pointer()
+	}
+	if cs.CommentPointers {
+		d.nodes = make(map[addrType]struct{})
+		d.walk(v, false, false, addr)
+	}
+	d.dump(v, false, false, addr)
 	d.w.Write(newlineBytes)
 }
 
