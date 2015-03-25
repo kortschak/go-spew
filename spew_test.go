@@ -136,6 +136,11 @@ func initSpewTests() {
 		m     map[string]int
 	}
 
+	var (
+		np  *int
+		nip = new(interface{})
+	)
+
 	v := new(int)
 	*v = 10
 	s := struct{ *int }{v}
@@ -153,6 +158,12 @@ func initSpewTests() {
 	d.a[1] = 10
 	d.p = &d.a[1]
 
+	type cs struct{ *cs }
+	var cyc cs
+	cyc.cs = &cyc
+
+	m := map[int][]interface{}{1: c}
+
 	utterTests = []utterTest{
 		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
 		{scsDefault, fCSSdump, uint8(64), "uint8(0x40)\n"},
@@ -160,6 +171,11 @@ func initSpewTests() {
 		{noComDefault, fCSFdump, []byte{1, 2, 3, 4, 5, 0},
 			"[]uint8{\n 0x01, 0x02, 0x03, 0x04, 0x05, 0x00,\n}\n",
 		},
+		{comPtrDefault, fCSFdump, &np, fmt.Sprintf("&(*int) /*%p*/ (nil)\n", &np)},
+		{comPtrDefault, fCSFdump, nip, fmt.Sprintf("&interface{} /*%p*/ (nil)\n", nip)},
+		{comPtrDefault, fCSFdump, s, fmt.Sprintf("struct { *int }{\n int: &int /*%p*/ (10),\n}\n", v)},
+		{comPtrDefault, fCSFdump, sp, fmt.Sprintf("&struct { *int } /*%p*/ {\n int: &int /*%p*/ (10),\n}\n", sp, v)},
+		{comPtrDefault, fCSFdump, spp, fmt.Sprintf("&&struct { *int } /*%p->%p*/ {\n int: &int /*%p*/ (10),\n}\n", spp, sp, v)},
 		{comPtrDefault, fCSFdump, c, fmt.Sprintf("[]interface{}{\n"+
 			" int( /*%p*/ 5),\n int( /*%p*/ 5),\n"+
 			" &int /*%[1]p*/ (5),\n &int /*%p*/ (5),\n}\n", &c[0], &c[1])},
@@ -167,9 +183,14 @@ func initSpewTests() {
 			" a: [2]int{\n  int(0),\n"+
 			"  int( /*%p*/ 10),\n },\n"+
 			" p: &int /*%[2]p*/ (10),\n}\n", d, &d.a[1])},
-		{comPtrDefault, fCSFdump, s, fmt.Sprintf("struct { *int }{\n int: &int /*%p*/ (10),\n}\n", v)},
-		{comPtrDefault, fCSFdump, sp, fmt.Sprintf("&struct { *int } /*%p*/ {\n int: &int /*%p*/ (10),\n}\n", sp, v)},
-		{comPtrDefault, fCSFdump, spp, fmt.Sprintf("&&struct { *int } /*%p->%p*/ {\n int: &int /*%p*/ (10),\n}\n", spp, sp, v)},
+		{comPtrDefault, fCSFdump, &cyc, fmt.Sprintf("&utter_test.cs /*%p*/ {\n"+
+			" cs: (*utter_test.cs) /*%[1]p*/ (<already shown>),\n}\n", cyc.cs)},
+		{comPtrDefault, fCSFdump, m, fmt.Sprintf("map[int][]interface{}{\n"+
+			" int(1): []interface{}{\n"+
+			"  int( /*%p*/ 5),\n"+
+			"  int( /*%p*/ 5),\n"+
+			"  &int /*%[1]p*/ (5),\n"+
+			"  &int /*%p*/ (5),\n },\n}\n", &c[0], &c[1])},
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
 			" 0x03, 0x04, 0x05, 0x00,                         // |....|\n}\n",
