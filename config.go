@@ -58,7 +58,7 @@ type ConfigState struct {
 	// comment annotations.
 	CommentBytes bool
 
-	// CommentPointer specifies whether pointer information will be added
+	// CommentPointers specifies whether pointer information will be added
 	// as comments.
 	CommentPointers bool
 

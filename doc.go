@@ -75,7 +75,7 @@ The following configuration options are available:
 		slice and array dumps.
 
 	* CommentPointers
-		CommentPointer specifies whether pointer information will be added
+		CommentPointers specifies whether pointer information will be added
 		as comments.
 
 	* IgnoreUnexported
