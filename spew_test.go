@@ -139,6 +139,8 @@ func initSpewTests() {
 	var (
 		np  *int
 		nip = new(interface{})
+		nm  map[int]int
+		ns  []int
 	)
 
 	v := new(int)
@@ -173,6 +175,8 @@ func initSpewTests() {
 		},
 		{comPtrDefault, fCSFdump, &np, fmt.Sprintf("&(*int) /*%p*/ (nil)\n", &np)},
 		{comPtrDefault, fCSFdump, nip, fmt.Sprintf("&interface{} /*%p*/ (nil)\n", nip)},
+		{comPtrDefault, fCSFdump, &nm, fmt.Sprintf("&map[int]int /*%p*/ (nil)\n", &nm)},
+		{comPtrDefault, fCSFdump, &ns, fmt.Sprintf("&[]int /*%p*/ (nil)\n", &ns)},
 		{comPtrDefault, fCSFdump, s, fmt.Sprintf("struct { *int }{\n int: &int /*%p*/ (10),\n}\n", v)},
 		{comPtrDefault, fCSFdump, sp, fmt.Sprintf("&struct { *int } /*%p*/ {\n int: &int /*%p*/ (10),\n}\n", sp, v)},
 		{comPtrDefault, fCSFdump, spp, fmt.Sprintf("&&struct { *int } /*%p->%p*/ {\n int: &int /*%p*/ (10),\n}\n", spp, sp, v)},
