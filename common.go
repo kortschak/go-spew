@@ -192,7 +192,7 @@ func printUint(w io.Writer, val uint64, base int) {
 // which is expected to be 32 or 64bit, to Writer w.
 func printFloat(w io.Writer, val float64, precision int, typeElided bool) {
 	w.Write([]byte(strconv.FormatFloat(val, 'g', -1, precision)))
-	if typeElided && val == math.Floor(val) {
+	if typeElided && !math.IsInf(val, 0) && val == math.Floor(val) {
 		w.Write(pointZeroBytes)
 	}
 }
