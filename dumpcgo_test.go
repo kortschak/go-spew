@@ -48,11 +48,12 @@ func addCgoDumpTests() {
 
 	// C unsigned char array.
 	v3 := testdata.GetCgoUnsignedCharArray()
-	v3t := "[6]testdata._Ctype_unsignedchar"
+	v3tbefore1_6 := "[6]testdata._Ctype_unsignedchar"
+	v3t1_6 := "[6]testdata._Ctype_uchar"
 	v3s := "" +
 		"{\n 0x74, 0x65, 0x73, 0x74, 0x33, 0x00," +
 		"                                                             // |test3.|\n}"
-	addDumpTest(v3, v3t+v3s+"\n")
+	addDumpTest(v3, v3tbefore1_6+v3s+"\n", v3t1_6+v3s+"\n")
 
 	// C signed char array.
 	v4 := testdata.GetCgoSignedCharArray()
