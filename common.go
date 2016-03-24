@@ -257,7 +257,19 @@ func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
 		if i%width == width-1 {
 			fmt.Fprintf(w, " // |%s|\n", commentBytes[:])
 		} else if i == len(data)-1 {
-			w.Write(bytes.Repeat([]byte("      "), width-i%width-1))
+			if len(data) > width {
+				slots := width - i%width - 1
+				switch slots {
+				case 0:
+					// Do nothing.
+				case 1:
+					w.Write([]byte(" /* */"))
+				default:
+					w.Write([]byte(" /*   "))
+					w.Write(bytes.Repeat([]byte("      "), slots-2))
+					w.Write([]byte("    */"))
+				}
+			}
 			fmt.Fprintf(w, " // |%s|\n", commentBytes[:len(data)%width])
 		}
 	}
