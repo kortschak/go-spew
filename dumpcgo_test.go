@@ -42,8 +42,7 @@ func addCgoDumpTests() {
 	v2 := testdata.GetCgoCharArray()
 	v2t := "[6]testdata._Ctype_char"
 	v2s := "" +
-		"{\n 0x74, 0x65, 0x73, 0x74, 0x32, 0x00," +
-		"                                                             // |test2.|\n}"
+		"{\n 0x74, 0x65, 0x73, 0x74, 0x32, 0x00, // |test2.|\n}"
 	addDumpTest(v2, v2t+v2s+"\n")
 
 	// C unsigned char array.
@@ -51,8 +50,7 @@ func addCgoDumpTests() {
 	v3tbefore1_6 := "[6]testdata._Ctype_unsignedchar"
 	v3t1_6 := "[6]testdata._Ctype_uchar"
 	v3s := "" +
-		"{\n 0x74, 0x65, 0x73, 0x74, 0x33, 0x00," +
-		"                                                             // |test3.|\n}"
+		"{\n 0x74, 0x65, 0x73, 0x74, 0x33, 0x00, // |test3.|\n}"
 	addDumpTest(v3, v3tbefore1_6+v3s+"\n", v3t1_6+v3s+"\n")
 
 	// C signed char array.
@@ -72,15 +70,13 @@ func addCgoDumpTests() {
 	v5 := testdata.GetCgoUint8tArray()
 	v5t := "[6]testdata._Ctype_uint8_t"
 	v5s := "" +
-		"{\n 0x74, 0x65, 0x73, 0x74, 0x35, 0x00," +
-		"                                                             // |test5.|\n}"
+		"{\n 0x74, 0x65, 0x73, 0x74, 0x35, 0x00, // |test5.|\n}"
 	addDumpTest(v5, v5t+v5s+"\n")
 
 	// C typedefed unsigned char array.
 	v6 := testdata.GetCgoTypdefedUnsignedCharArray()
 	v6t := "[6]testdata._Ctype_custom_uchar_t"
 	v6s := "" +
-		"{\n 0x74, 0x65, 0x73, 0x74, 0x36, 0x00," +
-		"                                                             // |test6.|\n}"
+		"{\n 0x74, 0x65, 0x73, 0x74, 0x36, 0x00, // |test6.|\n}"
 	addDumpTest(v6, v6t+v6s+"\n")
 }
