@@ -806,3 +806,173 @@ int(3): string("3"),
 		t.Errorf("Sorted keys mismatch:\n  %v %v", s, expected)
 	}
 }
+
+type limitedWriter struct {
+	limit int
+	buf   bytes.Buffer
+}
+
+func newLimitedWriter(limit int) *limitedWriter {
+	return &limitedWriter{limit: limit}
+}
+
+func (w *limitedWriter) Write(b []byte) (int, error) {
+	n, err := w.buf.Write(b)
+	if err != nil {
+		return n, err
+	}
+	if len := w.buf.Len(); len > w.limit {
+		panic(fmt.Sprintf("buffer longer than limit: %d > %d:\n%s",
+			len, w.limit, w.buf.Bytes()))
+	}
+	return n, nil
+}
+
+var sliceElementCycles = []struct {
+	v    interface{}
+	want string
+}{
+	{
+		v: func() interface{} {
+			r := make([]interface{}, 1)
+			r[0] = r
+			return r
+		}(),
+		// We cannot detect the cycle until at least once around
+		// the cycle as the initial v seen by utter.Dump was not
+		// addressable.
+		want: `[]interface{}{
+ []interface{}{
+  []interface{}(<already shown>),
+ },
+}
+`,
+	},
+	{
+		v: func() interface{} {
+			r := make([]interface{}, 1)
+			r[0] = &r
+			return &r
+		}(),
+		want: `&[]interface{}{
+ (*[]interface{})(<already shown>),
+}
+`,
+	},
+	{
+		v: func() interface{} {
+			type recurrence struct {
+				v []interface{}
+			}
+			r := recurrence{make([]interface{}, 1)}
+			r.v[0] = r
+			return r
+		}(),
+		// We cannot detect the cycle until at least once around
+		// the cycle as the initial v seen by utter.Dump was not
+		// addressable.
+		want: `utter_test.recurrence{
+ v: []interface{}{
+  utter_test.recurrence{
+   v: []interface{}(<already shown>),
+  },
+ },
+}
+`,
+	},
+	{
+		v: func() interface{} {
+			type recurrence struct {
+				v []interface{}
+			}
+			r := recurrence{make([]interface{}, 1)}
+			r.v[0] = r
+			return &r
+		}(),
+		want: `&utter_test.recurrence{
+ v: []interface{}(<already shown>),
+}
+`,
+	},
+}
+
+// https://github.com/kortschak/utter/issues/5
+func TestIssue5Slices(t *testing.T) {
+	for _, test := range sliceElementCycles {
+		w := newLimitedWriter(512)
+		func() {
+			defer func() {
+				r := recover()
+				if r != nil {
+					t.Errorf("limited writer panicked: probable cycle: %v", r)
+				}
+			}()
+			utter.Fdump(w, test.v)
+			got := w.buf.String()
+			if got != test.want {
+				t.Errorf("unexpected value:\ngot:\n%swant:\n%s", got, test.want)
+			}
+		}()
+	}
+}
+
+var mapElementCycles = []struct {
+	v    interface{}
+	want string
+}{
+	{
+		v: func() interface{} {
+			r := make(map[int]interface{}, 1)
+			r[0] = r
+			return r
+		}(),
+	},
+	{
+		v: func() interface{} {
+			r := make(map[int]interface{}, 1)
+			r[0] = &r
+			return &r
+		}(),
+	},
+	{
+		v: func() interface{} {
+			type recurrence struct {
+				v map[int]interface{}
+			}
+			r := recurrence{make(map[int]interface{}, 1)}
+			r.v[0] = r
+			return r
+		}(),
+	},
+	{
+		v: func() interface{} {
+			type recurrence struct {
+				v map[int]interface{}
+			}
+			r := recurrence{make(map[int]interface{}, 1)}
+			r.v[0] = r
+			return &r
+		}(),
+	},
+}
+
+// https://github.com/kortschak/utter/issues/5
+func TestIssue5Maps(t *testing.T) {
+	t.Skip("Failing")
+	for _, test := range mapElementCycles {
+		w := newLimitedWriter(512)
+		func() {
+			defer func() {
+				r := recover()
+				if r != nil {
+					t.Errorf("limited writer panicked: probable cycle: %v", r)
+				}
+			}()
+			utter.Fdump(w, test.v)
+			got := w.buf.String()
+			if got != test.want {
+				t.Errorf("unexpected value:\ngot:\n%swant:\n%s", got, test.want)
+			}
+		}()
+	}
+}
