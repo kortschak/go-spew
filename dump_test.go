@@ -851,6 +851,19 @@ var sliceElementCycles = []struct {
 	{
 		v: func() interface{} {
 			r := make([]interface{}, 1)
+			r[0] = r
+			return &r
+		}(),
+		want: `&[]interface{}{
+ []interface{}{
+  []interface{}(<already shown>),
+ },
+}
+`,
+	},
+	{
+		v: func() interface{} {
+			r := make([]interface{}, 1)
 			r[0] = &r
 			return &r
 		}(),
@@ -925,6 +938,13 @@ var mapElementCycles = []struct {
 			r := make(map[int]interface{}, 1)
 			r[0] = r
 			return r
+		}(),
+	},
+	{
+		v: func() interface{} {
+			r := make(map[int]interface{}, 1)
+			r[0] = r
+			return &r
 		}(),
 	},
 	{
