@@ -939,6 +939,10 @@ var mapElementCycles = []struct {
 			r[0] = r
 			return r
 		}(),
+		want: `map[int]interface{}{
+ int(0): map[int]interface{}(<already shown>),
+}
+`,
 	},
 	{
 		v: func() interface{} {
@@ -946,6 +950,10 @@ var mapElementCycles = []struct {
 			r[0] = r
 			return &r
 		}(),
+		want: `&map[int]interface{}{
+ int(0): map[int]interface{}(<already shown>),
+}
+`,
 	},
 	{
 		v: func() interface{} {
@@ -953,6 +961,10 @@ var mapElementCycles = []struct {
 			r[0] = &r
 			return &r
 		}(),
+		want: `&map[int]interface{}{
+ int(0): &map[int]interface{}(<already shown>),
+}
+`,
 	},
 	{
 		v: func() interface{} {
@@ -963,6 +975,14 @@ var mapElementCycles = []struct {
 			r.v[0] = r
 			return r
 		}(),
+		want: `utter_test.recurrence{
+ v: map[int]interface{}{
+  int(0): utter_test.recurrence{
+   v: map[int]interface{}(<already shown>),
+  },
+ },
+}
+`,
 	},
 	{
 		v: func() interface{} {
@@ -973,12 +993,19 @@ var mapElementCycles = []struct {
 			r.v[0] = r
 			return &r
 		}(),
+		want: `&utter_test.recurrence{
+ v: map[int]interface{}{
+  int(0): utter_test.recurrence{
+   v: map[int]interface{}(<already shown>),
+  },
+ },
+}
+`,
 	},
 }
 
 // https://github.com/kortschak/utter/issues/5
 func TestIssue5Maps(t *testing.T) {
-	t.Skip("Failing")
 	for _, test := range mapElementCycles {
 		w := newLimitedWriter(512)
 		func() {

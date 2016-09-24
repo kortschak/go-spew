@@ -426,6 +426,20 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			break
 		}
 
+		// Remove pointers at or below the current depth from map used to detect
+		// circular refs.
+		for k, depth := range d.pointers {
+			if depth >= d.depth {
+				delete(d.pointers, k)
+			}
+		}
+		addr := v.Pointer()
+		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
+			d.w.Write(circularBytes)
+			break
+		}
+		d.pointers[addr] = d.depth
+
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
 		keys := v.MapKeys()
