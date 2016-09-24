@@ -353,8 +353,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 	}
 	switch kind {
 	case reflect.Invalid:
-		// Do nothing.  We should never get here since invalid has already
-		// been handled above.
+		// We should never get here since invalid has already been handled above.
+		panic("cannot reach")
 
 	case reflect.Bool:
 		printBool(d.w, v.Bool())
@@ -414,8 +414,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 		}
 
 	case reflect.Ptr:
-		// Do nothing.  We should never get here since pointers have already
-		// been handled above.
+		// We should never get here since pointers have already been handled above.
+		panic("cannot reach")
 
 	case reflect.Map:
 		// nil maps should be indicated as different than empty maps
