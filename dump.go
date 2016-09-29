@@ -133,12 +133,19 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	// Display type information.
 	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
-	typeBytes := []byte(v.Type().String())
-	if typeBytes[0] == '*' {
+	kind := v.Kind()
+	bufferedChan := kind == reflect.Chan && v.Cap() != 0
+	if kind == reflect.Ptr || bufferedChan {
 		d.w.Write(openParenBytes)
 	}
+	typeBytes := []byte(v.Type().String())
 	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
-	if typeBytes[0] == '*' {
+	switch {
+	case bufferedChan:
+		d.w.Write(commaSpaceBytes)
+		fmt.Fprint(d.w, v.Cap())
+		fallthrough
+	case kind == reflect.Ptr:
 		d.w.Write(closeParenBytes)
 	}
 
@@ -332,8 +339,17 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 	if !d.ignoreNextType {
 		d.indent()
 		if wantType {
+			bufferedChan := v.Kind() == reflect.Chan && v.Cap() != 0
+			if bufferedChan {
+				d.w.Write(openParenBytes)
+			}
 			typeBytes := []byte(v.Type().String())
 			d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+			if bufferedChan {
+				d.w.Write(commaSpaceBytes)
+				fmt.Fprint(d.w, v.Cap())
+				d.w.Write(closeParenBytes)
+			}
 		}
 	}
 	d.ignoreNextType = false

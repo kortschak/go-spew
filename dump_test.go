@@ -669,6 +669,33 @@ func addChanDumpTests() {
 	addDumpTest(v2, v2t+"("+v2s+")\n")
 	addDumpTest(pv2, "&"+v2t+"("+v2s+")\n")
 	addDumpTest(&pv2, "&&"+v2t+"("+v2s+")\n")
+
+	// Real buffered channel.
+	v3 := make(chan int, 1)
+	pv3 := &v3
+	v3t := "(chan int, 1)"
+	v3s := fmt.Sprintf("%p", v3)
+	addDumpTest(v3, v3t+"("+v3s+")\n")
+	addDumpTest(pv3, "&"+v3t+"("+v3s+")\n")
+	addDumpTest(&pv3, "&&"+v3t+"("+v3s+")\n")
+
+	// Real send only channel.
+	v4 := make(chan<- int)
+	pv4 := &v4
+	v4t := "chan<- int"
+	v4s := fmt.Sprintf("%p", v4)
+	addDumpTest(v4, v4t+"("+v4s+")\n")
+	addDumpTest(pv4, "&"+v4t+"("+v4s+")\n")
+	addDumpTest(&pv4, "&&"+v4t+"("+v4s+")\n")
+
+	// Real receive only channel.
+	v5 := make(<-chan int)
+	pv5 := &v5
+	v5t := "<-chan int"
+	v5s := fmt.Sprintf("%p", v5)
+	addDumpTest(v5, v5t+"("+v5s+")\n")
+	addDumpTest(pv5, "&"+v5t+"("+v5s+")\n")
+	addDumpTest(&pv5, "&&"+v5t+"("+v5s+")\n")
 }
 
 func addFuncDumpTests() {
