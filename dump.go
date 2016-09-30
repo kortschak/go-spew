@@ -142,8 +142,14 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
 	switch {
 	case bufferedChan:
-		d.w.Write(commaSpaceBytes)
-		fmt.Fprint(d.w, v.Cap())
+		switch len := v.Len(); len {
+		case 0:
+			fmt.Fprintf(d.w, ", %d", v.Cap())
+		case 1:
+			fmt.Fprintf(d.w, ", %d /* %d element */", v.Cap(), len)
+		default:
+			fmt.Fprintf(d.w, ", %d /* %d elements */", v.Cap(), len)
+		}
 		fallthrough
 	case kind == reflect.Ptr:
 		d.w.Write(closeParenBytes)
@@ -346,9 +352,14 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			typeBytes := []byte(v.Type().String())
 			d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
 			if bufferedChan {
-				d.w.Write(commaSpaceBytes)
-				fmt.Fprint(d.w, v.Cap())
-				d.w.Write(closeParenBytes)
+				switch len := v.Len(); len {
+				case 0:
+					fmt.Fprintf(d.w, ", %d)", v.Cap())
+				case 1:
+					fmt.Fprintf(d.w, ", %d /* %d element */)", v.Cap(), len)
+				default:
+					fmt.Fprintf(d.w, ", %d /* %d elements */)", v.Cap(), len)
+				}
 			}
 		}
 	}
