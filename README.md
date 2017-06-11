@@ -1,8 +1,7 @@
 utter
 =====
 
-[![Build Status](https://travis-ci.org/kortschak/utter.png?branch=master)]
-(https://travis-ci.org/kortschak/utter) [![Coverage Status](https://coveralls.io/repos/kortschak/utter/badge.png?branch=master)](https://coveralls.io/r/kortschak/utter?branch=master)
+[![Build Status](https://travis-ci.org/kortschak/utter.svg?branch=master)](https://travis-ci.org/kortschak/utter) [![Coverage Status](https://coveralls.io/repos/kortschak/utter/badge.svg?branch=master)](https://coveralls.io/r/kortschak/utter?branch=master)
 
 utter is a fork of the outstanding [go-spew tool](https://github.com/davecgh/go-spew).
 Where go-spew is an aid for debugging, providing annotation of dumped datastructures,
@@ -17,8 +16,7 @@ be used in open source or commercial projects.
 
 ## Documentation
 
-[![GoDoc](https://godoc.org/github.com/kortschak/utter?status.png)]
-(http://godoc.org/github.com/kortschak/utter)
+[![GoDoc](https://godoc.org/github.com/kortschak/utter?status.svg)](http://godoc.org/github.com/kortschak/utter)
 
 Full `go doc` style documentation for the project can be viewed online without
 installing this package by using the excellent GoDoc site here:
