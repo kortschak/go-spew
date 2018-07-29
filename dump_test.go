@@ -1061,9 +1061,32 @@ var mapElementCycles = []struct {
 }
 `,
 	},
+	// The following test is to confirm that the recursion detection
+	// is not overly zealous by missing identifying the address of slices.
+	// This is https://github.com/kortschak/utter/issues/12.
+	{
+		v: map[interface{}][]interface{}{
+			"outer": []interface{}{
+				map[interface{}]interface{}{
+					"inner": []interface{}{"value"},
+				},
+			},
+		},
+		want: `map[interface{}][]interface{}{
+ string("outer"): []interface{}{
+  map[interface{}]interface{}{
+   string("inner"): []interface{}{
+    string("value"),
+   },
+  },
+ },
+}
+`,
+	},
 }
 
 // https://github.com/kortschak/utter/issues/5
+// https://github.com/kortschak/utter/issues/12
 func TestIssue5Maps(t *testing.T) {
 	for _, test := range mapElementCycles {
 		w := newLimitedWriter(512)
