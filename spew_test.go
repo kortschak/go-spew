@@ -182,7 +182,7 @@ func initSpewTests() {
 		{comPtrDefault, fCSFdump, spp, fmt.Sprintf("&&struct { *int } /*%p->%p*/ {\n int: &int /*%p*/ (10),\n}\n", spp, sp, v)},
 		{comPtrDefault, fCSFdump, c, fmt.Sprintf("[]interface{}{\n"+
 			" int( /*%p*/ 5),\n int( /*%p*/ 5),\n"+
-			" &int /*%[1]p*/ (5),\n &int /*%p*/ (5),\n}\n", &c[0], &c[1])},
+			" (*interface{}) /*%[1]p*/ (<already shown>),\n &int /*%p*/ (5),\n}\n", &c[0], &c[1])},
 		{comPtrDefault, fCSFdump, d, fmt.Sprintf("&struct { a [2]int; p *int } /*%p*/ {\n"+
 			" a: [2]int{\n  int(0),\n"+
 			"  int( /*%p*/ 10),\n },\n"+
@@ -193,7 +193,7 @@ func initSpewTests() {
 			" int(1): []interface{}{\n"+
 			"  int( /*%p*/ 5),\n"+
 			"  int( /*%p*/ 5),\n"+
-			"  &int /*%[1]p*/ (5),\n"+
+			"  (*interface{}) /*%[1]p*/ (<already shown>),\n"+
 			"  &int /*%p*/ (5),\n },\n}\n", &c[0], &c[1])},
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +

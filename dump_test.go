@@ -887,9 +887,7 @@ var sliceElementCycles = []struct {
 		// the cycle as the initial v seen by utter.Dump was not
 		// addressable.
 		want: `[]interface{}{
- []interface{}{
-  []interface{}(<already shown>),
- },
+ []interface{}(<already shown>),
 }
 `,
 	},
@@ -900,9 +898,7 @@ var sliceElementCycles = []struct {
 			return &r
 		}(),
 		want: `&[]interface{}{
- []interface{}{
-  []interface{}(<already shown>),
- },
+ []interface{}(<already shown>),
 }
 `,
 	},
@@ -913,7 +909,7 @@ var sliceElementCycles = []struct {
 			return &r
 		}(),
 		want: `&[]interface{}{
- (*[]interface{})(<already shown>),
+ &[]interface{}(<already shown>),
 }
 `,
 	},
@@ -948,7 +944,25 @@ var sliceElementCycles = []struct {
 			return &r
 		}(),
 		want: `&utter_test.recurrence{
- v: []interface{}(<already shown>),
+ v: []interface{}{
+  utter_test.recurrence{
+   v: []interface{}(<already shown>),
+  },
+ },
+}
+`,
+	},
+	{
+		v: func() interface{} {
+			type container struct {
+				v []int
+			}
+			return &container{[]int{1}}
+		}(),
+		want: `&utter_test.container{
+ v: []int{
+  int(1),
+ },
 }
 `,
 	},
