@@ -28,9 +28,11 @@ import (
 	"unsafe"
 )
 
+type ptr unsafe.Pointer
+
 const (
 	// ptrSize is the size of a pointer on the current arch.
-	ptrSize = unsafe.Sizeof((*byte)(nil))
+	ptrSize = unsafe.Sizeof((ptr)(nil))
 )
 
 var (

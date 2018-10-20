@@ -17,7 +17,9 @@
 
 package utter
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // walkPtr handles walking of pointers by indirecting them as necessary.
 func (d *dumpState) walkPtr(v reflect.Value) {
@@ -35,7 +37,7 @@ func (d *dumpState) walkPtr(v reflect.Value) {
 			nilFound = true
 			break
 		}
-		addr := v.Pointer()
+		addr := ptr(v.Pointer())
 		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
 			cycleFound = true
 			break
@@ -55,7 +57,7 @@ func (d *dumpState) walkPtr(v reflect.Value) {
 	}
 
 	if !nilFound && !cycleFound {
-		d.walk(v, true, false, 0)
+		d.walk(v, true, false, nil)
 	}
 }
 
@@ -73,7 +75,7 @@ func (d *dumpState) walkSlice(v reflect.Value) {
 // value to figure out what kind of object we are dealing with and follows it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and escaped from.
-func (d *dumpState) walk(v reflect.Value, wasPtr, static bool, _ uintptr) {
+func (d *dumpState) walk(v reflect.Value, wasPtr, static bool, _ ptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {

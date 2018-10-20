@@ -48,7 +48,7 @@ var (
 )
 
 type addrType struct {
-	addr uintptr
+	addr ptr
 	typ  reflect.Type
 }
 
@@ -56,7 +56,7 @@ type addrType struct {
 type dumpState struct {
 	w                io.Writer
 	depth            int
-	pointers         map[uintptr]int
+	pointers         map[ptr]int
 	nodes            map[addrType]struct{}
 	ignoreNextType   bool
 	ignoreNextIndent bool
@@ -76,9 +76,9 @@ func (d *dumpState) indent() {
 // unpackValue returns values inside of non-nil interfaces when possible.
 // This is useful for data types like structs, arrays, slices, and maps which
 // can contain varying types packed inside an interface.
-func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool, addr uintptr) {
+func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool, addr ptr) {
 	if v.CanAddr() {
-		addr = v.Addr().Pointer()
+		addr = ptr(v.Addr().Pointer())
 	}
 	if v.Kind() == reflect.Interface && !v.IsNil() {
 		return v.Elem(), v.Kind() == reflect.Ptr, false, addr
@@ -97,7 +97,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	}
 
 	// Keep list of all dereferenced pointers to show later.
-	var pointerChain []uintptr
+	var pointerChain []ptr
 
 	// Figure out how many levels of indirection there are by dereferencing
 	// pointers and unpacking interfaces down the chain while detecting circular
@@ -110,7 +110,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 			break
 		}
 		indirects++
-		addr := v.Pointer()
+		addr := ptr(v.Pointer())
 		if d.cs.CommentPointers {
 			pointerChain = append(pointerChain, addr)
 		}
@@ -162,7 +162,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 			if i > 0 {
 				d.w.Write(pointerChainBytes)
 			}
-			printHexPtr(d.w, addr, true)
+			printHexPtr(d.w, uintptr(addr), true)
 		}
 		d.w.Write(closeCommentBytes)
 	}
@@ -179,9 +179,9 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 
 	default:
 		d.ignoreNextType = true
-		var addr uintptr
+		var addr ptr
 		if v.CanAddr() {
-			addr = v.Addr().Pointer()
+			addr = ptr(v.Addr().Pointer())
 		}
 		d.dump(v, true, false, addr)
 	}
@@ -319,7 +319,7 @@ func isNumeric(k reflect.Kind) bool {
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and annotated.
-func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
+func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr ptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
@@ -375,7 +375,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 
 	if _, referenced := d.nodes[addrType{addr, typ}]; !wasPtr && referenced {
 		d.w.Write(openCommentBytes)
-		printHexPtr(d.w, addr, true)
+		printHexPtr(d.w, uintptr(addr), true)
 		d.w.Write(closeCommentBytes)
 	}
 	switch kind {
@@ -423,7 +423,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 				delete(d.pointers, k)
 			}
 		}
-		addr = v.Index(0).Addr().Pointer()
+		addr = ptr(v.Index(0).Addr().Pointer())
 		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
 			d.w.Write(circularBytes)
 			break
@@ -465,7 +465,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 				delete(d.pointers, k)
 			}
 		}
-		addr := v.Pointer()
+		addr := ptr(v.Pointer())
 		if pd, ok := d.pointers[addr]; ok && pd < d.depth {
 			d.w.Write(circularBytes)
 			break
@@ -562,11 +562,11 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 	}
 
 	d := dumpState{w: w, cs: cs}
-	d.pointers = make(map[uintptr]int)
+	d.pointers = make(map[ptr]int)
 	v := reflect.ValueOf(a)
-	var addr uintptr
+	var addr ptr
 	if v.CanAddr() {
-		addr = v.Addr().Pointer()
+		addr = ptr(v.Addr().Pointer())
 	}
 	if cs.CommentPointers {
 		d.nodes = make(map[addrType]struct{})
