@@ -11,7 +11,7 @@ pseudo-code representations of pointer-based structures will require subsequent
 processing.
 
 A comprehensive suite of tests with near 100% test coverage is provided to ensure
-proper functionality.  utter is licensed under the liberal ISC license, so it may
+proper functionality. utter is licensed under the liberal ISC license, so it may
 be used in open source or commercial projects.
 
 ## Documentation

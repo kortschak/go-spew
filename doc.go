@@ -27,14 +27,14 @@ printing facilities for Go data types are as follows:
 	* Byte arrays and slices are dumped in a way similar to the hexdump -C command
 	  which includes byte values in hex, and ASCII output
 
-The approache utter allows for dumping Go data structures is less flexible than
+The approach utter allows for dumping Go data structures is less flexible than
 its parent tool. It has just a:
 
 	* Dump style which prints with newlines and customizable indentation
 
 Quick Start
 
-This section demonstrates how to quickly get started with utter.  See the
+This section demonstrates how to quickly get started with utter. See the
 sections below for further details on formatting and configuration options.
 
 To dump a variable with full newlines, indentation, type, and pointer
@@ -56,7 +56,7 @@ options.  See the ConfigState documentation for more details.
 The following configuration options are available:
 	* Indent
 		String to use for each indentation level for Dump functions.
-		It is a single space by default.  A popular alternative is "\t".
+		It is a single space by default. A popular alternative is "\t".
 
 	* NumericWidth
 		NumericWidth specifies the number of columns to use when dumping
