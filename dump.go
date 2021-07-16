@@ -499,11 +499,15 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			if d.cs.IgnoreUnexported && vtf.PkgPath != "" {
 				continue
 			}
+			unpacked, wasPtr, static, addr := d.unpackValue(v.Field(i))
+			if d.cs.OmitZero && isZero(unpacked) {
+				continue
+			}
 			d.indent()
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.Field(i)))
+			d.dump(unpacked, wasPtr, static, addr)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -547,6 +551,16 @@ func isDefault(typ reflect.Type) bool {
 // isCompound returns whether the kind is a compound data type.
 func isCompound(kind reflect.Kind) bool {
 	return kind == reflect.Struct || kind == reflect.Slice || kind == reflect.Array || kind == reflect.Map
+}
+
+// isZero returns whether v is the zero value of its type safely for all types.
+// If v is not a kind recognised by reflect it is not zero. See TestAddedReflectValue.
+// TODO(kortschak): Handle all cases.
+func isZero(v reflect.Value) bool {
+	if kind := v.Kind(); kind == reflect.Invalid || kind > reflect.UnsafePointer {
+		return false
+	}
+	return v.IsZero()
 }
 
 // fdump is a helper function to consolidate the logic from the various public

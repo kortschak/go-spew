@@ -109,6 +109,8 @@ options. See the ConfigState documentation for more details.
 	ElideType specifies that type information defined by context should
 	not be printed in a dump.
 
+* OmitZero specifies that zero values should not be printed in a dump.
+
 * SortKeys
 	Specifies map keys should be sorted before being printed. Use
 	this to have a more deterministic, diffable output.  Note that

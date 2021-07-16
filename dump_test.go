@@ -838,6 +838,69 @@ func TestDump(t *testing.T) {
 	}
 }
 
+func TestDumpOmitZero(t *testing.T) {
+	cfg := utter.ConfigState{OmitZero: true, SortKeys: true}
+	type sub struct {
+		a, b int
+	}
+	type st struct {
+		i  int
+		s  string
+		v  []int
+		m  map[int]int
+		a  [3]int
+		p  *int
+		st sub
+	}
+	tests := []struct {
+		val      st
+		expected string
+	}{
+		{
+			val:      st{},
+			expected: "utter_test.st{\n}\n",
+		},
+		{
+			val:      st{i: 1},
+			expected: "utter_test.st{\ni: int(1),\n}\n",
+		},
+		{
+			val:      st{s: "string"},
+			expected: "utter_test.st{\ns: string(\"string\"),\n}\n",
+		},
+		{
+			val:      st{v: []int{1, 2}},
+			expected: "utter_test.st{\nv: []int{int(1), int(2)},\n}\n",
+		},
+		{
+			val:      st{m: map[int]int{1: -1, 2: -2}},
+			expected: "utter_test.st{\nm: map[int]int{\nint(1): int(-1),\nint(2): int(-2),\n},\n}\n",
+		},
+		{
+			val:      st{a: [3]int{1, 2, 3}},
+			expected: "utter_test.st{\na: [3]int{int(1), int(2), int(3)},\n}\n",
+		},
+		{
+			val:      st{p: new(int)},
+			expected: "utter_test.st{\np: &int(0),\n}\n",
+		},
+		{
+			val:      st{st: sub{a: 1, b: 2}},
+			expected: "utter_test.st{\nst: utter_test.sub{\na: int(1),\nb: int(2),\n},\n}\n",
+		},
+		{
+			val:      st{st: sub{a: 0, b: 2}},
+			expected: "utter_test.st{\nst: utter_test.sub{\nb: int(2),\n},\n}\n",
+		},
+	}
+	for i, test := range tests {
+		s := cfg.Sdump(test.val)
+		if s != test.expected {
+			t.Errorf("Dump #%d\n got: %q\n %q", i, s, test.expected)
+		}
+	}
+}
+
 func TestDumpSortedKeys(t *testing.T) {
 	cfg := utter.ConfigState{SortKeys: true}
 	s := cfg.Sdump(map[int]string{1: "1", 3: "3", 2: "2"})

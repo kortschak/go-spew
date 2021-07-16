@@ -66,6 +66,9 @@ type ConfigState struct {
 	// ignored during a dump.
 	IgnoreUnexported bool
 
+	// OmitZero specifies that zero values should not be printed in a dump.
+	OmitZero bool
+
 	// ElideType specifies that type information defined by context should
 	// not be printed in a dump.
 	ElideType bool
