@@ -474,16 +474,31 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 
 		d.w.Write(openBraceNewlineBytes)
 		d.depth++
-		keys := v.MapKeys()
 		if d.cs.SortKeys {
-			sortValues(keys)
-		}
-		for _, key := range keys {
-			d.dump(d.unpackValue(key))
-			d.w.Write(colonSpaceBytes)
-			d.ignoreNextIndent = true
-			d.dump(d.unpackValue(v.MapIndex(key)))
-			d.w.Write(commaNewlineBytes)
+			iter := v.MapRange()
+			keys := make([]reflect.Value, 0, v.Len())
+			vals := make([]reflect.Value, 0, v.Len())
+			for iter.Next() {
+				keys = append(keys, iter.Key())
+				vals = append(vals, iter.Value())
+			}
+			sortMapByKeyVals(keys, vals)
+			for i, key := range keys {
+				d.dump(d.unpackValue(key))
+				d.w.Write(colonSpaceBytes)
+				d.ignoreNextIndent = true
+				d.dump(d.unpackValue(vals[i]))
+				d.w.Write(commaNewlineBytes)
+			}
+		} else {
+			iter := v.MapRange()
+			for iter.Next() {
+				d.dump(d.unpackValue(iter.Key()))
+				d.w.Write(colonSpaceBytes)
+				d.ignoreNextIndent = true
+				d.dump(d.unpackValue(iter.Value()))
+				d.w.Write(commaNewlineBytes)
+			}
 		}
 		d.depth--
 		d.indent()

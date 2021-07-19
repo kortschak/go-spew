@@ -313,68 +313,78 @@ func printHexPtr(w io.Writer, p uintptr, isPointer bool) {
 	w.Write(buf)
 }
 
-// valuesSorter implements sort.Interface to allow a slice of reflect.Value
+// mapSorter implements sort.Interface to allow a slice of reflect.Value
 // elements to be sorted.
-type valuesSorter struct {
-	values []reflect.Value
+type mapSorter struct {
+	keys []reflect.Value
+	vals []reflect.Value
 }
 
 // Len returns the number of values in the slice.  It is part of the
 // sort.Interface implementation.
-func (s *valuesSorter) Len() int {
-	return len(s.values)
+func (s *mapSorter) Len() int {
+	return len(s.keys)
 }
 
 // Swap swaps the values at the passed indices.  It is part of the
 // sort.Interface implementation.
-func (s *valuesSorter) Swap(i, j int) {
-	s.values[i], s.values[j] = s.values[j], s.values[i]
+func (s *mapSorter) Swap(i, j int) {
+	s.keys[i], s.keys[j] = s.keys[j], s.keys[i]
+	s.vals[i], s.vals[j] = s.vals[j], s.vals[i]
 }
 
-// valueSortLess returns whether the first value should sort before the second
-// value.  It is used by valueSorter.Less as part of the sort.Interface
-// implementation.
-func valueSortLess(a, b reflect.Value) bool {
-	switch a.Kind() {
+// less returns whether the a key/value should sort before the b key/value.
+// It is used by valueSorter.Less as part of the sort.Interface implementation.
+func less(kA, kB, vA, vB reflect.Value) bool {
+	switch kA.Kind() {
 	case reflect.Bool:
-		return !a.Bool() && b.Bool()
+		return !kA.Bool() && kB.Bool()
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
-		return a.Int() < b.Int()
+		return kA.Int() < kB.Int()
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
-		return a.Uint() < b.Uint()
+		return kA.Uint() < kB.Uint()
 	case reflect.Float32, reflect.Float64:
-		return a.Float() < b.Float()
+		if vA.IsValid() && vB.IsValid() && math.IsNaN(kA.Float()) && math.IsNaN(kB.Float()) {
+			return less(vA, vB, reflect.Value{}, reflect.Value{})
+		}
+		return math.IsNaN(kA.Float()) || kA.Float() < kB.Float()
 	case reflect.String:
-		return a.String() < b.String()
+		return kA.String() < kB.String()
 	case reflect.Uintptr:
-		return a.Uint() < b.Uint()
+		return kA.Uint() < kB.Uint()
 	case reflect.Array:
 		// Compare the contents of both arrays.
-		l := a.Len()
+		l := kA.Len()
 		for i := 0; i < l; i++ {
-			av := a.Index(i)
-			bv := b.Index(i)
+			av := kA.Index(i)
+			bv := kB.Index(i)
 			if av.Interface() == bv.Interface() {
 				continue
 			}
-			return valueSortLess(av, bv)
+			return less(av, bv, vA, vB)
 		}
+		return less(vA, vB, reflect.Value{}, reflect.Value{})
 	}
-	return a.String() < b.String()
+	return kA.String() < kB.String()
 }
 
 // Less returns whether the value at index i should sort before the
 // value at index j.  It is part of the sort.Interface implementation.
-func (s *valuesSorter) Less(i, j int) bool {
-	return valueSortLess(s.values[i], s.values[j])
+func (s *mapSorter) Less(i, j int) bool {
+	return less(s.keys[i], s.keys[j], s.vals[i], s.vals[j])
 }
 
-// sortValues is a generic sort function for native types: int, uint, bool,
-// string and uintptr.  Other inputs are sorted according to their
-// Value.String() value to ensure display stability.
-func sortValues(values []reflect.Value) {
-	if len(values) == 0 {
+// sortMapByKeyVals is a generic sort function for native types: int, uint, bool,
+// float, string and uintptr.  Other inputs are sorted according to their
+// Value.String() value to ensure display stability. Floating point values
+// sort NaN before non-NaN values and NaN keys are ordered by their corresponding
+// values.
+func sortMapByKeyVals(keys, vals []reflect.Value) {
+	if len(keys) != len(vals) {
+		panic("invalid map key val slice pair")
+	}
+	if len(keys) == 0 {
 		return
 	}
-	sort.Sort(&valuesSorter{values})
+	sort.Sort(&mapSorter{keys: keys, vals: vals})
 }

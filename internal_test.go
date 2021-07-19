@@ -117,8 +117,8 @@ func TestAddedReflectValue(t *testing.T) {
 	i++
 }
 
-// SortValues makes the internal sortValues function available to the test
-// package.
-func SortValues(values []reflect.Value) {
-	sortValues(values)
+// SortMapByKeyVals makes the internal sortMapByKeyVals function available
+// to the test package.
+func SortMapByKeyVals(keys, vals []reflect.Value) {
+	sortMapByKeyVals(keys, vals)
 }

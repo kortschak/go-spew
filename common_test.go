@@ -185,15 +185,21 @@ func TestSortValues(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		utter.SortValues(test.input)
+		vals := make([]reflect.Value, len(test.input))
+		copy(vals, test.input)
+		utter.SortMapByKeyVals(test.input, vals)
 		// reflect.DeepEqual cannot really make sense of reflect.Value,
 		// probably because of all the pointer tricks. For instance,
 		// v(2.0) != v(2.0) on a 32-bits system. Turn them into interface{}
 		// instead.
 		input := getInterfaces(test.input)
+		values := getInterfaces(vals)
 		expected := getInterfaces(test.expected)
 		if !reflect.DeepEqual(input, expected) {
-			t.Errorf("Sort mismatch:\n %v != %v", input, expected)
+			t.Errorf("Sort keys mismatch:\n %v != %v", input, expected)
+		}
+		if !reflect.DeepEqual(values, expected) {
+			t.Errorf("Sort values mismatch:\n %v != %v", values, expected)
 		}
 	}
 }

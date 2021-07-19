@@ -65,6 +65,7 @@ package utter_test
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"testing"
 	"unsafe"
 
@@ -903,15 +904,37 @@ func TestDumpOmitZero(t *testing.T) {
 
 func TestDumpSortedKeys(t *testing.T) {
 	cfg := utter.ConfigState{SortKeys: true}
-	s := cfg.Sdump(map[int]string{1: "1", 3: "3", 2: "2"})
-	expected := `map[int]string{
+	tests := []struct {
+		m        interface{}
+		expected string
+	}{
+		{
+			m: map[int]string{1: "1", 3: "3", 2: "2"},
+			expected: `map[int]string{
 int(1): string("1"),
 int(2): string("2"),
 int(3): string("3"),
 }
-`
-	if s != expected {
-		t.Errorf("Sorted keys mismatch:\n  %v %v", s, expected)
+`,
+		},
+		{
+			m: map[float64]int{math.NaN(): 1, math.NaN(): 2, 0: 0, 1: 3},
+			expected: `map[float64]int{
+float64(NaN): int(1),
+float64(NaN): int(2),
+float64(0): int(0),
+float64(1): int(3),
+}
+`,
+		},
+	}
+
+	for _, test := range tests {
+		got := cfg.Sdump(test.m)
+
+		if got != test.expected {
+			t.Errorf("Sorted keys mismatch:\n  %v %v", got, test.expected)
+		}
 	}
 }
 
