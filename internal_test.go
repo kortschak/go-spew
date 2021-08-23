@@ -38,10 +38,7 @@ type dummyFmtState struct {
 }
 
 func (dfs *dummyFmtState) Flag(f int) bool {
-	if f == int('+') {
-		return true
-	}
-	return false
+	return f == int('+')
 }
 
 func (dfs *dummyFmtState) Precision() (int, bool) {
@@ -69,7 +66,6 @@ func TestInvalidReflectValue(t *testing.T) {
 	if s != want {
 		t.Errorf("InvalidReflectValue #%d\n got: %s want: %s", i, s, want)
 	}
-	i++
 }
 
 // changeKind uses unsafe to intentionally change the kind of a reflect.Value to
@@ -114,7 +110,6 @@ func TestAddedReflectValue(t *testing.T) {
 	if s != want {
 		t.Errorf("TestAddedReflectValue #%d\n got: %s want: %s", i, s, want)
 	}
-	i++
 }
 
 // SortMapByKeyVals makes the internal sortMapByKeyVals function available

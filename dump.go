@@ -139,7 +139,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		d.w.Write(openParenBytes)
 	}
 	typeBytes := []byte(v.Type().String())
-	d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+	d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 	switch {
 	case bufferedChan:
 		switch len := v.Len(); len {
@@ -350,7 +350,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 				d.w.Write(openParenBytes)
 			}
 			typeBytes := []byte(v.Type().String())
-			d.w.Write(bytes.Replace(typeBytes, interfaceTypeBytes, interfaceBytes, -1))
+			d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 			if bufferedChan {
 				switch len := v.Len(); len {
 				case 0:
