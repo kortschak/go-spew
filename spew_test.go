@@ -20,8 +20,6 @@ package utter_test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/kortschak/utter"
@@ -68,25 +66,6 @@ type utterTest struct {
 // tests are handled in the dump and format tests.
 var utterTests []utterTest
 
-// redirStdout is a helper function to return the standard output from f as a
-// byte slice.
-func redirStdout(f func()) ([]byte, error) {
-	tempFile, err := ioutil.TempFile("", "ss-test")
-	if err != nil {
-		return nil, err
-	}
-	fileName := tempFile.Name()
-	defer os.Remove(fileName) // Ignore error
-
-	origStdout := os.Stdout
-	os.Stdout = tempFile
-	f()
-	os.Stdout = origStdout
-	tempFile.Close()
-
-	return ioutil.ReadFile(fileName)
-}
-
 func initSpewTests() {
 	// Config states with various settings.
 	scsDefault := utter.NewDefaultConfig()
@@ -126,15 +105,6 @@ func initSpewTests() {
 	// Elide implicit types.
 	elideTypeDefault := utter.NewDefaultConfig()
 	elideTypeDefault.ElideType = true
-
-	// depthTester is used to test max depth handling for structs, array, slices
-	// and maps.
-	type depthTester struct {
-		ic    indirCir1
-		arr   [1]string
-		slice []string
-		m     map[string]int
-	}
 
 	var (
 		np  *int
