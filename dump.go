@@ -58,6 +58,7 @@ type dumpState struct {
 	depth            int
 	pointers         map[uintptr]int
 	nodes            map[addrType]struct{}
+	displayed        map[addrType]struct{}
 	ignoreNextType   bool
 	ignoreNextIndent bool
 	cs               *ConfigState
@@ -99,6 +100,12 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	// Keep list of all dereferenced pointers to show later.
 	var pointerChain []uintptr
 
+	// Record the value's address.
+	value := addrType{addr: v.Pointer()}
+
+	// Keep the original value in case we have already displayed it.
+	orig := v
+
 	// Figure out how many levels of indirection there are by dereferencing
 	// pointers and unpacking interfaces down the chain while detecting circular
 	// references.
@@ -131,15 +138,28 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		}
 	}
 
+	// Record the value's element type and check whether it has been displayed
+	value.typ = v.Type()
+	_, displayed := d.displayed[value]
+
 	// Display type information.
-	d.w.Write(bytes.Repeat(ampersandBytes, indirects))
+	var typeBytes []byte
+	if displayed {
+		d.w.Write(openParenBytes)
+		typeBytes = []byte(orig.Type().String())
+	} else {
+		d.w.Write(bytes.Repeat(ampersandBytes, indirects))
+		typeBytes = []byte(v.Type().String())
+	}
 	kind := v.Kind()
 	bufferedChan := kind == reflect.Chan && v.Cap() != 0
 	if kind == reflect.Ptr || bufferedChan {
 		d.w.Write(openParenBytes)
 	}
-	typeBytes := []byte(v.Type().String())
 	d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
+	if displayed {
+		d.w.Write(closeParenBytes)
+	}
 	switch {
 	case bufferedChan:
 		switch len := v.Len(); len {
@@ -174,7 +194,7 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		d.w.Write(nilBytes)
 		d.w.Write(closeParenBytes)
 
-	case cycleFound:
+	case cycleFound, displayed:
 		d.w.Write(circularBytes)
 
 	default:
@@ -183,6 +203,8 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		if v.CanAddr() {
 			addr = v.Addr().Pointer()
 		}
+		// Mark the value as having been displayed.
+		d.displayed[value] = struct{}{}
 		d.dump(v, true, false, addr)
 	}
 }
@@ -597,6 +619,7 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 	if v.CanAddr() {
 		addr = v.Addr().Pointer()
 	}
+	d.displayed = make(map[addrType]struct{})
 	if cs.CommentPointers {
 		d.nodes = make(map[addrType]struct{})
 		d.walk(v, false, false, addr)
