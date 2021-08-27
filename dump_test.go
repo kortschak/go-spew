@@ -1019,7 +1019,7 @@ var sliceElementCycles = []struct {
 			return &r
 		}(),
 		want: `&[]interface{}{
- &[]interface{}(<already shown>),
+ (*[]interface{})(<already shown>),
 }
 `,
 	},
@@ -1131,7 +1131,7 @@ var mapElementCycles = []struct {
 			return &r
 		}(),
 		want: `&map[int]interface{}{
- int(0): &map[int]interface{}(<already shown>),
+ int(0): (*map[int]interface{})(<already shown>),
 }
 `,
 	},
