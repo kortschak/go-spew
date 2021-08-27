@@ -89,10 +89,10 @@ func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, sta
 
 // dumpPtr handles formatting of pointers by indirecting them as necessary.
 func (d *dumpState) dumpPtr(v reflect.Value) {
-	// Remove pointers at or below the current depth from map used to detect
+	// Remove pointers below the current depth from map used to detect
 	// circular refs.
 	for k, depth := range d.pointers {
-		if depth >= d.depth {
+		if depth > d.depth {
 			delete(d.pointers, k)
 		}
 	}
@@ -438,10 +438,10 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			d.dumpSlice(v)
 			break
 		}
-		// Remove pointers at or below the current depth from map used to detect
+		// Remove pointers below the current depth from map used to detect
 		// circular refs.
 		for k, depth := range d.pointers {
-			if depth >= d.depth {
+			if depth > d.depth {
 				delete(d.pointers, k)
 			}
 		}
@@ -480,10 +480,10 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			break
 		}
 
-		// Remove pointers at or below the current depth from map used to detect
+		// Remove pointers below the current depth from map used to detect
 		// circular refs.
 		for k, depth := range d.pointers {
-			if depth >= d.depth {
+			if depth > d.depth {
 				delete(d.pointers, k)
 			}
 		}
