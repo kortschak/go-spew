@@ -596,11 +596,35 @@ func addStructDumpTests() {
 	v4t := "utter_test.embedwrap"
 	v4t2 := "utter_test.embed"
 	v4t3 := "string"
-	v4s := "{\n embed: &" + v4t2 + "{\n  a: " + v4t3 + "(\"embedstr\"),\n },\n e: &" + v4t2 + "{\n  a: " + v4t3 + "(\"embedstr\"),\n },\n}"
+	v4s := "{\n embed: &" + v4t2 + "{\n  a: " + v4t3 + "(\"embedstr\"),\n },\n e: (*" + v4t2 + ")(<already shown>),\n}"
 	addDumpTest(v4, v4t+v4s+"\n")
 	addDumpTest(pv4, "&"+v4t+v4s+"\n")
 	addDumpTest(&pv4, "&&"+v4t+v4s+"\n")
 	addDumpTest(nv4, "(*"+v4t+")(nil)\n")
+
+	// Struct that has fields that share a value in pointer that is not a cycle.
+	type ss5 struct{ s string }
+	type s5 struct {
+		p1 *ss5
+		p2 *ss5
+	}
+	ip1 := &ss5{"shared"}
+	v5 := s5{ip1, ip1}
+	v5t := "utter_test.s5"
+	v5s := "utter_test.ss5"
+	addDumpTest(v5, v5t+"{\n p1: &"+v5s+"{\n  s: string(\"shared\"),\n },\n p2: (*"+v5s+")(<already shown>),\n}\n")
+
+	// Struct that has fields that share a value in pointer chain that is not a cycle.
+	type ss6 struct{ s string }
+	type s6 struct {
+		p1 **ss6
+		p2 **ss6
+	}
+	ipp1 := &ss6{"shared"}
+	v6 := s6{&ipp1, &ipp1}
+	v6t := "utter_test.s6"
+	v6s := "utter_test.ss6"
+	addDumpTest(v6, v6t+"{\n p1: &&"+v6s+"{\n  s: string(\"shared\"),\n },\n p2: (**"+v6s+")(<already shown>),\n}\n")
 }
 
 func addUintptrDumpTests() {
