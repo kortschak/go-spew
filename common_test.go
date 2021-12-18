@@ -115,7 +115,7 @@ func testFailed(result string, wants []string) bool {
 	return true
 }
 
-// TestSortValues ensures the sort functionality for relect.Value based sorting
+// TestSortValues ensures the sort functionality for reflect.Value based sorting
 // works as intended.
 func TestSortValues(t *testing.T) {
 	getInterfaces := func(values []reflect.Value) []interface{} {
@@ -181,7 +181,7 @@ func TestSortValues(t *testing.T) {
 		// Invalid.
 		{
 			[]reflect.Value{embedB, embedA, embedC},
-			[]reflect.Value{embedB, embedA, embedC},
+			[]reflect.Value{embedA, embedB, embedC},
 		},
 	}
 	for _, test := range tests {

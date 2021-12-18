@@ -365,7 +365,7 @@ func less(kA, kB, vA, vB reflect.Value) bool {
 		}
 		return less(vA, vB, reflect.Value{}, reflect.Value{})
 	}
-	return kA.String() < kB.String()
+	return fmt.Sprint(kA) < fmt.Sprint(kB)
 }
 
 // Less returns whether the value at index i should sort before the
