@@ -146,17 +146,16 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	var typeBytes []byte
 	if displayed {
 		d.w.Write(openParenBytes)
-		typeBytes = []byte(strings.TrimPrefix(orig.Type().String(), d.cs.LocalPackage))
+		typeBytes = []byte(typeString(orig.Type(), d.cs.LocalPackage))
 	} else {
 		d.w.Write(bytes.Repeat(ampersandBytes, indirects))
-		typeBytes = []byte(strings.TrimPrefix(v.Type().String(), d.cs.LocalPackage))
+		typeBytes = []byte(typeString(v.Type(), d.cs.LocalPackage))
 	}
 	kind := v.Kind()
 	bufferedChan := kind == reflect.Chan && v.Cap() != 0
 	if kind == reflect.Ptr || bufferedChan {
 		d.w.Write(openParenBytes)
 	}
-	typeBytes = bytes.TrimPrefix(typeBytes, dotBytes)
 	d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 	if displayed {
 		d.w.Write(closeParenBytes)
@@ -377,8 +376,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static, canElideCompound bool,
 			if bufferedChan {
 				d.w.Write(openParenBytes)
 			}
-			typeBytes := []byte(strings.TrimPrefix(v.Type().String(), d.cs.LocalPackage))
-			typeBytes = bytes.TrimPrefix(typeBytes, dotBytes)
+			typeBytes := []byte(typeString(v.Type(), d.cs.LocalPackage))
 			d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 			if bufferedChan {
 				switch len := v.Len(); len {
@@ -584,6 +582,25 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static, canElideCompound bool,
 		default:
 			d.w.Write(closeParenBytes)
 		}
+	}
+}
+
+// typeString returns the string representation of the reflect.Type with the local
+// package selector removed.
+func typeString(typ reflect.Type, local string) string {
+	switch typ.Kind() {
+	case reflect.Ptr:
+		return "*" + strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(typ.String(), "*"), local), ".")
+	case reflect.Array:
+		return fmt.Sprintf("[%d]%s", typ.Len(), typeString(typ.Elem(), local))
+	case reflect.Chan:
+		return fmt.Sprintf("%s %s", typ.ChanDir(), typeString(typ.Elem(), local))
+	case reflect.Map:
+		return fmt.Sprintf("map[%s]%s", typeString(typ.Key(), local), typeString(typ.Elem(), local))
+	case reflect.Slice:
+		return fmt.Sprintf("[]%s", typeString(typ.Elem(), local))
+	default:
+		return strings.TrimPrefix(strings.TrimPrefix(typ.String(), local), ".")
 	}
 }
 

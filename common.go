@@ -168,7 +168,6 @@ var (
 	ampersandBytes        = []byte("&")
 	colonSpaceBytes       = []byte(": ")
 	spaceBytes            = []byte(" ")
-	dotBytes              = []byte(".")
 	openParenBytes        = []byte("(")
 	closeParenBytes       = []byte(")")
 	nilBytes              = []byte("nil")
