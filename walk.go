@@ -55,7 +55,7 @@ func (d *dumpState) walkPtr(v reflect.Value) {
 	}
 
 	if !nilFound && !cycleFound {
-		d.walk(v, true, false, 0)
+		d.walk(v, false, false, false, 0)
 	}
 }
 
@@ -73,7 +73,7 @@ func (d *dumpState) walkSlice(v reflect.Value) {
 // value to figure out what kind of object we are dealing with and follows it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and escaped from.
-func (d *dumpState) walk(v reflect.Value, wasPtr, static bool, _ uintptr) {
+func (d *dumpState) walk(v reflect.Value, _, _, _ bool, _ uintptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {

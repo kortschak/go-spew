@@ -77,14 +77,14 @@ func (d *dumpState) indent() {
 // unpackValue returns values inside of non-nil interfaces when possible.
 // This is useful for data types like structs, arrays, slices, and maps which
 // can contain varying types packed inside an interface.
-func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static bool, addr uintptr) {
+func (d *dumpState) unpackValue(v reflect.Value) (val reflect.Value, wasPtr, static, canElideStruct bool, addr uintptr) {
 	if v.CanAddr() {
 		addr = v.Addr().Pointer()
 	}
 	if v.Kind() == reflect.Interface && !v.IsNil() {
-		return v.Elem(), v.Kind() == reflect.Ptr, false, addr
+		return v.Elem(), v.Kind() == reflect.Ptr, false, false, addr
 	}
-	return v, v.Kind() == reflect.Ptr, true, addr
+	return v, v.Kind() == reflect.Ptr, true, false, addr
 }
 
 // dumpPtr handles formatting of pointers by indirecting them as necessary.
@@ -206,13 +206,13 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 		}
 		// Mark the value as having been displayed.
 		d.displayed[value] = struct{}{}
-		d.dump(v, true, false, addr)
+		d.dump(v, true, false, false, addr)
 	}
 }
 
 // dumpSlice handles formatting of arrays and slices.  Byte (uint8 under
 // reflection) arrays and slices are dumped in hexdump -C fashion.
-func (d *dumpState) dumpSlice(v reflect.Value) {
+func (d *dumpState) dumpSlice(v reflect.Value, canElideCompound bool) {
 	// Determine whether this type should be hex dumped or not.  Also,
 	// for types which should be hexdumped, try to use the underlying data
 	// first, then fall back to trying to convert them to a uint8 slice.
@@ -309,7 +309,8 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 		if nPeriod == 0 || i%nPeriod != 0 {
 			d.ignoreNextIndent = true
 		}
-		d.dump(d.unpackValue(vi))
+		val, wasPtr, static, _, addr := d.unpackValue(vi)
+		d.dump(val, wasPtr, static, canElideCompound, addr)
 		if nPeriod == 0 || (i%nPeriod != nPeriod-1 && i != numEntries-1) {
 			if i < numEntries-1 {
 				d.w.Write(commaSpaceBytes)
@@ -342,7 +343,7 @@ func isNumeric(k reflect.Kind) bool {
 // value to figure out what kind of object we are dealing with and formats it
 // appropriately.  It is a recursive function, however circular data structures
 // are detected and annotated.
-func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
+func (d *dumpState) dump(v reflect.Value, wasPtr, static, canElideCompound bool, addr uintptr) {
 	// Handle invalid reflect values immediately.
 	kind := v.Kind()
 	if kind == reflect.Invalid {
@@ -359,9 +360,13 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 
 	typ := v.Type()
 	wantType := true
+	interfaceContext := kind == reflect.Interface
 	if d.cs.ElideType {
 		defType := !wasPtr && isDefault(typ)
-		wantType = (!(static || defType) || isCompound(kind)) && !(kind == reflect.Interface && v.IsNil())
+		wantType = !static && !defType && (!interfaceContext || !v.IsNil())
+		if !canElideCompound {
+			wantType = wantType || isCompound(kind)
+		}
 	}
 
 	// Print type information unless already handled elsewhere.
@@ -437,7 +442,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			break
 		}
 		if v.Len() == 0 {
-			d.dumpSlice(v)
+			d.dumpSlice(v, !interfaceContext)
 			break
 		}
 		// Remove pointers below the current depth from map used to detect
@@ -457,7 +462,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 		fallthrough
 
 	case reflect.Array:
-		d.dumpSlice(v)
+		d.dumpSlice(v, !interfaceContext)
 
 	case reflect.String:
 		d.w.Write([]byte(strconv.Quote(v.String())))
@@ -508,19 +513,23 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			}
 			sortMapByKeyVals(keys, vals)
 			for i, key := range keys {
-				d.dump(d.unpackValue(key))
+				val, wasPtr, static, _, addr := d.unpackValue(key)
+				d.dump(val, wasPtr, static, !interfaceContext, addr)
 				d.w.Write(colonSpaceBytes)
 				d.ignoreNextIndent = true
-				d.dump(d.unpackValue(vals[i]))
+				val, wasPtr, static, _, addr = d.unpackValue(vals[i])
+				d.dump(val, wasPtr, static, !interfaceContext, addr)
 				d.w.Write(commaNewlineBytes)
 			}
 		} else {
 			iter := v.MapRange()
 			for iter.Next() {
-				d.dump(d.unpackValue(iter.Key()))
+				val, wasPtr, static, _, addr := d.unpackValue(iter.Key())
+				d.dump(val, wasPtr, static, !interfaceContext, addr)
 				d.w.Write(colonSpaceBytes)
 				d.ignoreNextIndent = true
-				d.dump(d.unpackValue(iter.Value()))
+				val, wasPtr, static, _, addr = d.unpackValue(iter.Value())
+				d.dump(val, wasPtr, static, !interfaceContext, addr)
 				d.w.Write(commaNewlineBytes)
 			}
 		}
@@ -538,7 +547,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			if d.cs.IgnoreUnexported && vtf.PkgPath != "" {
 				continue
 			}
-			unpacked, wasPtr, static, addr := d.unpackValue(v.Field(i))
+			unpacked, wasPtr, static, _, addr := d.unpackValue(v.Field(i))
 			if d.cs.OmitZero && isZero(unpacked) {
 				continue
 			}
@@ -546,7 +555,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			d.w.Write([]byte(vtf.Name))
 			d.w.Write(colonSpaceBytes)
 			d.ignoreNextIndent = true
-			d.dump(unpacked, wasPtr, static, addr)
+			d.dump(unpacked, wasPtr, static, false, addr)
 			d.w.Write(commaNewlineBytes)
 		}
 		d.depth--
@@ -624,9 +633,9 @@ func fdump(cs *ConfigState, w io.Writer, a interface{}) {
 	d.displayed = make(map[addrType]struct{})
 	if cs.CommentPointers {
 		d.nodes = make(map[addrType]struct{})
-		d.walk(v, false, false, addr)
+		d.walk(v, false, false, false, addr)
 	}
-	d.dump(v, false, false, addr)
+	d.dump(v, false, false, false, addr)
 	d.w.Write(newlineBytes)
 }
 
