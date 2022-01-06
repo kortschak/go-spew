@@ -209,6 +209,11 @@ func initSpewTests() {
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, func() *float64 { f := 1.0; return &f }(), "&float64(1)\n"},
 		{elideTypeDefault, fCSFdump, []float32{1, 2, 3, 4, 5}, "[]float32{\n 1.0,\n 2.0,\n 3.0,\n 4.0,\n 5.0,\n}\n"},
+		{elideTypeDefault, fCSFdump, map[struct{ int }]struct{ int }{{1}: {1}}, "map[struct { int }]struct { int }{\n {\n  int: 1,\n }: {\n  int: 1,\n },\n}\n"},
+		{elideTypeDefault, fCSFdump, map[interface{}]struct{ int }{struct{ int }{1}: {1}}, "map[interface{}]struct { int }{\n struct { int }{\n  int: 1,\n }: {\n  int: 1,\n },\n}\n"},
+		{elideTypeDefault, fCSFdump, map[struct{ int }]interface{}{{1}: struct{ int }{1}}, "map[struct { int }]interface{}{\n {\n  int: 1,\n }: struct { int }{\n  int: 1,\n },\n}\n"},
+		{elideTypeDefault, fCSFdump, []struct{ int }{{1}}, "[]struct { int }{\n {\n  int: 1,\n },\n}\n"},
+		{elideTypeDefault, fCSFdump, []interface{}{struct{ int }{1}}, "[]interface{}{\n struct { int }{\n  int: 1,\n },\n}\n"},
 		{num4elideDefault, fCSFdump, []interface{}{
 			[]int{1, 2, 3, 4},
 			[]uint{1, 2, 3, 4, 5},
@@ -223,13 +228,13 @@ func initSpewTests() {
 				" []complex128{\n  1+1i, 0+0i, 1-1i, 2+0i,\n  4+0i, 8+0i,\n },\n}\n",
 		},
 		{num4elideDefault, fCSFdump, [][]int{
-			[]int{1, 2, 3},
-			[]int{1, 2, 3, 4},
-			[]int{1, 2, 3, 4, 5}},
+			{1, 2, 3},
+			{1, 2, 3, 4},
+			{1, 2, 3, 4, 5}},
 			"[][]int{\n" +
-				" []int{\n  1, 2, 3,\n },\n" +
-				" []int{\n  1, 2, 3, 4,\n },\n" +
-				" []int{\n  1, 2, 3, 4,\n  5,\n },\n}\n",
+				" {\n  1, 2, 3,\n },\n" +
+				" {\n  1, 2, 3, 4,\n },\n" +
+				" {\n  1, 2, 3, 4,\n  5,\n },\n}\n",
 		},
 		{string4elideDefault, fCSFdump, []string{"one", "two", "three", "four", "five"},
 			"[]string{\n \"one\", \"two\", \"three\", \"four\",\n \"five\",\n}\n",
