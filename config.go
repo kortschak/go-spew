@@ -69,6 +69,9 @@ type ConfigState struct {
 	// OmitZero specifies that zero values should not be printed in a dump.
 	OmitZero bool
 
+	// LocalPackage specifies a package selector to trim from type information.
+	LocalPackage string
+
 	// ElideType specifies that type information defined by context should
 	// not be printed in a dump.
 	ElideType bool

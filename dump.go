@@ -146,16 +146,17 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	var typeBytes []byte
 	if displayed {
 		d.w.Write(openParenBytes)
-		typeBytes = []byte(orig.Type().String())
+		typeBytes = []byte(strings.TrimPrefix(orig.Type().String(), d.cs.LocalPackage))
 	} else {
 		d.w.Write(bytes.Repeat(ampersandBytes, indirects))
-		typeBytes = []byte(v.Type().String())
+		typeBytes = []byte(strings.TrimPrefix(v.Type().String(), d.cs.LocalPackage))
 	}
 	kind := v.Kind()
 	bufferedChan := kind == reflect.Chan && v.Cap() != 0
 	if kind == reflect.Ptr || bufferedChan {
 		d.w.Write(openParenBytes)
 	}
+	typeBytes = bytes.TrimPrefix(typeBytes, dotBytes)
 	d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 	if displayed {
 		d.w.Write(closeParenBytes)
@@ -371,7 +372,8 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 			if bufferedChan {
 				d.w.Write(openParenBytes)
 			}
-			typeBytes := []byte(v.Type().String())
+			typeBytes := []byte(strings.TrimPrefix(v.Type().String(), d.cs.LocalPackage))
+			typeBytes = bytes.TrimPrefix(typeBytes, dotBytes)
 			d.w.Write(bytes.ReplaceAll(typeBytes, interfaceTypeBytes, interfaceBytes))
 			if bufferedChan {
 				switch len := v.Len(); len {

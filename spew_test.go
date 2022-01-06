@@ -102,6 +102,10 @@ func initSpewTests() {
 	ignUnexDefault := utter.NewDefaultConfig()
 	ignUnexDefault.IgnoreUnexported = true
 
+	// Remove local package prefix.
+	elideLocalDefault := utter.NewDefaultConfig()
+	elideLocalDefault.LocalPackage = "utter_test"
+
 	// Elide implicit types.
 	elideTypeDefault := utter.NewDefaultConfig()
 	elideTypeDefault.ElideType = true
@@ -186,6 +190,9 @@ func initSpewTests() {
 		},
 		{ignUnexDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}},
 			"utter_test.Foo{\n ExportedField: map[interface{}]interface{}{\n  string(\"one\"): bool(true),\n },\n}\n",
+		},
+		{elideLocalDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}},
+			"Foo{\n unexportedField: Bar{\n  flag: Flag(1),\n  data: uintptr(0),\n },\n ExportedField: map[interface{}]interface{}{\n  string(\"one\"): bool(true),\n },\n}\n",
 		},
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, float32(1), "float32(1)\n"},
