@@ -140,6 +140,8 @@ func initSpewTests() {
 
 	m := map[int][]interface{}{1: c}
 
+	type b map[string]interface{}
+
 	utterTests = []utterTest{
 		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
 		{scsDefault, fCSSdump, uint8(64), "uint8(0x40)\n"},
@@ -209,6 +211,7 @@ func initSpewTests() {
 		{elideLocalDefault, fCSFdump, chan<- cs(nil),
 			"chan<- cs(nil)\n",
 		},
+		{elideLocalDefault, fCSFdump, b{"one": b{"two": "three"}}, "b{\n string(\"one\"): b{\n  string(\"two\"): string(\"three\"),\n },\n}\n"},
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, float32(1), "float32(1)\n"},
 		{elideTypeDefault, fCSFdump, int(1), "1\n"},
@@ -224,6 +227,7 @@ func initSpewTests() {
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, func() *float64 { f := 1.0; return &f }(), "&float64(1)\n"},
 		{elideTypeDefault, fCSFdump, []float32{1, 2, 3, 4, 5}, "[]float32{\n 1.0,\n 2.0,\n 3.0,\n 4.0,\n 5.0,\n}\n"},
+		{elideTypeDefault, fCSFdump, b{"one": b{"two": "three"}}, "utter_test.b{\n \"one\": utter_test.b{\n  \"two\": \"three\",\n },\n}\n"},
 		{num4elideDefault, fCSFdump, []interface{}{
 			[]int{1, 2, 3, 4},
 			[]uint{1, 2, 3, 4, 5},

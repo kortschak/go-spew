@@ -579,6 +579,9 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static bool, addr uintptr) {
 // typeString returns the string representation of the reflect.Type with the local
 // package selector removed.
 func typeString(typ reflect.Type, local string) string {
+	if typ.PkgPath() != "" {
+		return strings.TrimPrefix(strings.TrimPrefix(typ.String(), local), ".")
+	}
 	switch typ.Kind() {
 	case reflect.Ptr:
 		return "*" + strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(typ.String(), "*"), local), ".")
