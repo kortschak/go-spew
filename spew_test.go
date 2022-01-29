@@ -140,6 +140,8 @@ func initSpewTests() {
 
 	m := map[int][]interface{}{1: c}
 
+	type b map[string]interface{}
+
 	utterTests = []utterTest{
 		{scsDefault, fCSFdump, int8(127), "int8(127)\n"},
 		{scsDefault, fCSSdump, uint8(64), "uint8(0x40)\n"},
@@ -209,6 +211,7 @@ func initSpewTests() {
 		{elideLocalDefault, fCSFdump, chan<- cs(nil),
 			"chan<- cs(nil)\n",
 		},
+		{elideLocalDefault, fCSFdump, b{"one": b{"two": "three"}}, "b{\n string(\"one\"): b{\n  string(\"two\"): string(\"three\"),\n },\n}\n"},
 		{elideTypeDefault, fCSFdump, float64(1), "1.0\n"},
 		{elideTypeDefault, fCSFdump, float32(1), "float32(1)\n"},
 		{elideTypeDefault, fCSFdump, int(1), "1\n"},
@@ -229,6 +232,7 @@ func initSpewTests() {
 		{elideTypeDefault, fCSFdump, map[struct{ int }]interface{}{{1}: struct{ int }{1}}, "map[struct { int }]interface{}{\n {\n  int: 1,\n }: struct { int }{\n  int: 1,\n },\n}\n"},
 		{elideTypeDefault, fCSFdump, []struct{ int }{{1}}, "[]struct { int }{\n {\n  int: 1,\n },\n}\n"},
 		{elideTypeDefault, fCSFdump, []interface{}{struct{ int }{1}}, "[]interface{}{\n struct { int }{\n  int: 1,\n },\n}\n"},
+		{elideTypeDefault, fCSFdump, b{"one": b{"two": "three"}}, "utter_test.b{\n \"one\": utter_test.b{\n  \"two\": \"three\",\n },\n}\n"},
 		{num4elideDefault, fCSFdump, []interface{}{
 			[]int{1, 2, 3, 4},
 			[]uint{1, 2, 3, 4, 5},
