@@ -139,6 +139,45 @@ func ExampleConfigState() {
 	// }
 }
 
+// This example demonstrates how to use a Quoting strategy.
+func ExampleConfigState_Quoting() {
+	scs := utter.ConfigState{
+		Indent: "\t", ElideType: true, SortKeys: true,
+
+		// Avoid escape sequences when present and force
+		// use of backquotes even when the complete string is
+		// not backquotable.
+		Quoting: utter.AvoidEscapes | utter.Force,
+	}
+
+	v := map[string]string{
+		"1. one":              "this\ntext\nspans\nlines\n",
+		"2. two":              "this text doesn't",
+		"3.\nt\nh\nr\ne\ne\n": "vertical key",
+		"4. four":             "contains \\backslashes\\ and `backquotes`",
+	}
+	scs.Dump(v)
+
+	// Output:
+	//
+	// map[string]string{
+	// 	"1. one": `this
+	// text
+	// spans
+	// lines
+	// `,
+	// 	"2. two": "this text doesn't",
+	// 	`3.
+	// t
+	// h
+	// r
+	// e
+	// e
+	// `: "vertical key",
+	// 	"4. four": `contains \backslashes\ and `+"`"+`backquotes`+"`",
+	// }
+}
+
 // This example demonstrates how to use ConfigState.Dump to dump variables to
 // stdout
 func ExampleConfigState_Dump() {

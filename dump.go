@@ -26,6 +26,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 var (
@@ -463,7 +465,7 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static, canElideCompound bool,
 		d.dumpSlice(v, !interfaceContext)
 
 	case reflect.String:
-		d.w.Write([]byte(strconv.Quote(v.String())))
+		d.writeQuoted(v.String())
 
 	case reflect.Interface:
 		// The only time we should get here is for nil interfaces due to
@@ -583,6 +585,109 @@ func (d *dumpState) dump(v reflect.Value, wasPtr, static, canElideCompound bool,
 			d.w.Write(closeParenBytes)
 		}
 	}
+}
+
+// writeQuoted writes the string s quoted according to the quoting strategy.
+func (d *dumpState) writeQuoted(s string) {
+	switch d.cs.Quoting {
+	default:
+		fallthrough
+	case DoubleQuote:
+		d.w.Write([]byte(strconv.Quote(s)))
+
+	case AvoidEscapes:
+		if !needsEscape(s) || !canBackquoteString(s) {
+			d.w.Write([]byte(strconv.Quote(s)))
+			return
+		}
+		d.backQuote(s)
+
+	case AvoidEscapes | Force:
+		if !needsEscape(s) {
+			d.w.Write([]byte(strconv.Quote(s)))
+			return
+		}
+
+		fallthrough
+	case Backquote, Backquote | Force:
+		if canBackquoteString(s) {
+			d.backQuote(s)
+			return
+		}
+
+		var last int
+		inBackquote := true
+		for i, r := range s {
+			if canBackquote(r) != inBackquote {
+				if last != 0 {
+					d.w.Write(plusBytes)
+				}
+				if inBackquote {
+					if i != last {
+						d.backQuote(s[last:i])
+					}
+				} else {
+					d.w.Write([]byte(strconv.Quote(s[last:i])))
+				}
+				last = i
+				inBackquote = !inBackquote
+			}
+		}
+		if last != len(s) {
+			if last != 0 {
+				d.w.Write(plusBytes)
+			}
+			if !inBackquote {
+				d.w.Write([]byte(strconv.Quote(s[last:])))
+				return
+			}
+			d.backQuote(s[last:])
+		}
+	}
+}
+
+// backQuote writes s backquoted.
+func (d *dumpState) backQuote(s string) {
+	d.w.Write(backQuoteBytes)
+	d.w.Write([]byte(s))
+	d.w.Write(backQuoteBytes)
+}
+
+// needsEscape returns whether the string s needs any escape sequence to be
+// double quote printed.
+func needsEscape(s string) bool {
+	for _, r := range s {
+		if r == '"' || r == '\\' {
+			return true
+		}
+		if !strconv.IsPrint(r) && !strconv.IsGraphic(r) {
+			return true
+		}
+	}
+	return false
+}
+
+// canBackquoteString returns whether the string s can be represented
+// unchanged as a backquoted string without non-space control characters.
+func canBackquoteString(s string) bool {
+	for _, r := range s {
+		if !canBackquote(r) {
+			return false
+		}
+	}
+	return true
+}
+
+// canBackquote returns whether the rune r can be represented unchanged as a
+// backquoted string without non-space control characters.
+func canBackquote(r rune) bool {
+	if r == utf8.RuneError {
+		return false
+	}
+	if utf8.RuneLen(r) > 1 {
+		return r != '\ufeff'
+	}
+	return (unicode.IsSpace(r) || ' ' < r) && r != '`' && r != '\u007f'
 }
 
 // typeString returns the string representation of the reflect.Type with the local

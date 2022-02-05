@@ -50,6 +50,9 @@ type ConfigState struct {
 	// a string slice or array. Zero specifies all entries on one line.
 	StringWidth int
 
+	// Quoting specifies the quoting strategy to use when printing strings.
+	Quoting Quoting
+
 	// BytesWidth specifies the number of byte columns to use when dumping a
 	// byte slice or array.
 	BytesWidth int
@@ -83,6 +86,29 @@ type ConfigState struct {
 	// which guarantees display stability.
 	SortKeys bool
 }
+
+// Quoting describes string quoting strategies.
+//
+// The numerical values of quoting constants are not guaranteed to be stable.
+type Quoting uint
+
+const (
+	// Quote strings with double quotes.
+	DoubleQuote Quoting = 0
+
+	// AvoidEscapes quotes strings using backquotes to avoid escape
+	// sequences if possible, otherwise double quotes are used.
+	AvoidEscapes Quoting = 1 << iota
+
+	// Backquote always quotes strings using backquotes where possible
+	// within the string. For sections of strings that can not be
+	// backquoted, additional double quote syntax is used.
+	Backquote
+
+	// Force is a modifier of AvoidEscapes that adds additional double
+	// quote syntax to represent parts that cannot be backquoted.
+	Force
+)
 
 // Config is the active configuration of the top-level functions.
 // The configuration can be changed by modifying the contents of utter.Config.

@@ -153,6 +153,8 @@ func unsafeReflectValue(v reflect.Value) (rv reflect.Value) {
 // Some constants in the form of bytes to avoid string overhead.  This mirrors
 // the technique used in the fmt package.
 var (
+	backQuoteBytes        = []byte("`")
+	quoteBytes            = []byte(`"`)
 	plusBytes             = []byte("+")
 	iBytes                = []byte("i")
 	trueBytes             = []byte("true")

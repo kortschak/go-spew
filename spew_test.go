@@ -110,6 +110,21 @@ func initSpewTests() {
 	elideTypeDefault := utter.NewDefaultConfig()
 	elideTypeDefault.ElideType = true
 
+	// AvoidEscape.
+	avoidEscape := utter.NewDefaultConfig()
+	avoidEscape.SortKeys = true
+	avoidEscape.Quoting = utter.AvoidEscapes
+
+	// AvoidEscape|Force.
+	avoidEscapeForce := utter.NewDefaultConfig()
+	avoidEscapeForce.SortKeys = true
+	avoidEscapeForce.Quoting = utter.AvoidEscapes | utter.Force
+
+	// Backquote.
+	backquote := utter.NewDefaultConfig()
+	backquote.SortKeys = true
+	backquote.Quoting = utter.Backquote
+
 	var (
 		np  *int
 		nip = new(interface{})
@@ -265,6 +280,29 @@ func initSpewTests() {
 				" []int{1, 2, 3, 4},\n" +
 				" []string{\"one\", \"two\", \"three\", \"four\", \"five\"},\n}\n",
 		},
+		{avoidEscape, fCSFdump, map[string]string{
+			"one":         "\no\nn\ne\n",
+			"\nt\nw\no\n": "two",
+			"three":       "`t\th\tr\te\te`",
+			"codeblock":   "```\ncode\n```\n",
+		}, "map[string]string{\n string(`\nt\nw\no\n`): string(\"two\"),\n string(\"codeblock\"): string(\"```\\ncode\\n```\\n\"),\n string(\"one\"): string(`\no\nn\ne\n`),\n string(\"three\"): string(\"`t\\th\\tr\\te\\te`\"),\n}\n"},
+		{avoidEscapeForce, fCSFdump, map[string]string{
+			"one":         "\no\nn\ne\n",
+			"\nt\nw\no\n": "two",
+			"three":       "`t\th\tr\te\te`",
+			"codeblock":   "```\ncode\n```\n",
+		}, "map[string]string{\n string(`\nt\nw\no\n`): string(\"two\"),\n string(\"codeblock\"): string(\"```\"+`\ncode\n`+\"```\"+`\n`),\n string(\"one\"): string(`\no\nn\ne\n`),\n string(\"three\"): string(\"`\"+`t\th\tr\te\te`+\"`\"),\n}\n"},
+		{backquote, fCSFdump, map[string]string{
+			"one":                   "\no\nn\ne\n",
+			"\nt\nw\no\n":           "two",
+			"three":                 "`t\th\tr\te\te`",
+			"backquote":             "`",
+			"tabbackquote":          "\t`",
+			"backquotetab":          "`\t",
+			"tabbackquotetab":       "\t`\t",
+			"backquotetabbackquote": "`\t`",
+			"codeblock":             "```\ncode\n```\n",
+		}, "map[string]string{\n string(`\nt\nw\no\n`): string(`two`),\n string(`backquote`): string(\"`\"),\n string(`backquotetab`): string(\"`\"+`\t`),\n string(`backquotetabbackquote`): string(\"`\"+`\t`+\"`\"),\n string(`codeblock`): string(\"```\"+`\ncode\n`+\"```\"+`\n`),\n string(`one`): string(`\no\nn\ne\n`),\n string(`tabbackquote`): string(`\t`+\"`\"),\n string(`tabbackquotetab`): string(`\t`+\"`\"+`\t`),\n string(`three`): string(\"`\"+`t\th\tr\te\te`+\"`\"),\n}\n"},
 	}
 }
 
