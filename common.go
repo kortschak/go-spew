@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/bits"
 	"reflect"
 	"sort"
 	"strconv"
@@ -229,15 +230,22 @@ func printComplex(w io.Writer, c complex128, floatPrecision int) {
 
 // hexDump is a modified 'hexdump -C'-like that returns a commented Go syntax
 // byte slice or array.
-func hexDump(w io.Writer, data []byte, indent string, width int, comment bool) {
+func hexDump(w io.Writer, data []byte, indent string, width int, comment, addr bool) {
 	var commentBytes []byte
 	if comment {
 		commentBytes = make([]byte, width)
 	}
 
+	var addrFmt string
+	if addr {
+		addrFmt = fmt.Sprintf("%%#0%dx: ", (bits.Len(uint(len(data)))+3)/4)
+	}
 	for i, v := range data {
 		if i%width == 0 {
 			fmt.Fprint(w, indent)
+			if addr {
+				fmt.Fprintf(w, addrFmt, i)
+			}
 		} else {
 			w.Write(spaceBytes)
 		}
