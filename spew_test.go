@@ -82,6 +82,11 @@ func initSpewTests() {
 	bs8Default := utter.NewDefaultConfig()
 	bs8Default.BytesWidth = 8
 
+	// Byte slice with 8 columns and an address.
+	bsa8Default := utter.NewDefaultConfig()
+	bsa8Default.BytesWidth = 8
+	bsa8Default.AddressBytes = true
+
 	// Numeric slice with 4 columns.
 	num4elideDefault := utter.NewDefaultConfig()
 	num4elideDefault.ElideType = true
@@ -204,6 +209,30 @@ func initSpewTests() {
 		},
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, // |.......|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3}, "[]uint8{\n" +
+			" 0x0: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x8: 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, /* */ // |.......|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2}, "[]uint8{\n" +
+			" 0x0: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x8: 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, /*       */ // |......|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1}, "[]uint8{\n" +
+			" 0x0: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x8: 0x03, 0x04, 0x05, 0x00, 0x01, /*             */ // |.....|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
+			" 0x0: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x8: 0x03, 0x04, 0x05, 0x00, /*                   */ // |....|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0}, "[]uint8{\n" +
+			" 0x00: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
+			" 0x08: 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, // |........|\n" +
+			" 0x10: 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, // |........|\n}\n",
+		},
+		{bsa8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1}, "[]uint8{\n" +
+			" 0x0: 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, // |.......|\n}\n",
 		},
 		{ignUnexDefault, fCSFdump, Foo{Bar{flag: 1}, map[interface{}]interface{}{"one": true}},
 			"utter_test.Foo{\n ExportedField: map[interface{}]interface{}{\n  string(\"one\"): bool(true),\n },\n}\n",

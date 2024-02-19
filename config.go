@@ -61,6 +61,10 @@ type ConfigState struct {
 	// comment annotations.
 	CommentBytes bool
 
+	// AddressBytes specifies whether byte slice or array dumps have index
+	// annotations.
+	AddressBytes bool
+
 	// CommentPointers specifies whether pointer information will be added
 	// as comments.
 	CommentPointers bool
@@ -133,10 +137,10 @@ pointer addresses used to indirect to the final value.  It provides the
 following features over the built-in printing facilities provided by the fmt
 package:
 
-	* Pointers are dereferenced and followed
-	* Circular data structures are detected and handled properly
-	* Byte arrays and slices are dumped in a way similar to the hexdump -C command
-	  which includes byte values in hex, and ASCII output
+  - Pointers are dereferenced and followed
+  - Circular data structures are detected and handled properly
+  - Byte arrays and slices are dumped in a way similar to the hexdump -C command
+    which includes byte values in hex, and ASCII output
 
 The configuration options are controlled by modifying the public members
 of c.  See ConfigState for options documentation.
@@ -158,15 +162,15 @@ func (c *ConfigState) Sdump(a interface{}) string {
 
 // NewDefaultConfig returns a ConfigState with the following default settings.
 //
-// 	Indent: " "
-//  NumericWidth: 1,
-//  StringWidth: 1,
-// 	BytesWidth: 16
-// 	CommentBytes: true
-// 	CommentPointers: false
-//  IgnoreUnexported: false
-//  ElideType: false
-// 	SortKeys: false
+//		Indent: " "
+//	 NumericWidth: 1,
+//	 StringWidth: 1,
+//		BytesWidth: 16
+//		CommentBytes: true
+//		CommentPointers: false
+//	 IgnoreUnexported: false
+//	 ElideType: false
+//		SortKeys: false
 func NewDefaultConfig() *ConfigState {
 	return &ConfigState{
 		Indent:       " ",

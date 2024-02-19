@@ -300,7 +300,7 @@ func (d *dumpState) dumpSlice(v reflect.Value, canElideCompound bool) {
 	// Hexdump the entire slice as needed.
 	if doHexDump {
 		indent := strings.Repeat(d.cs.Indent, d.depth)
-		hexDump(d.w, buf, indent, d.cs.BytesWidth, d.cs.CommentBytes)
+		hexDump(d.w, buf, indent, d.cs.BytesWidth, d.cs.CommentBytes, d.cs.AddressBytes)
 		return
 	}
 
@@ -785,10 +785,10 @@ pointer addresses used to indirect to the final value.  It provides the
 following features over the built-in printing facilities provided by the fmt
 package:
 
-	* Pointers are dereferenced and followed
-	* Circular data structures are detected and annotated
-	* Byte arrays and slices are dumped in a way similar to the hexdump -C command,
-	  which includes byte values in hex, and ASCII output
+  - Pointers are dereferenced and followed
+  - Circular data structures are detected and annotated
+  - Byte arrays and slices are dumped in a way similar to the hexdump -C command,
+    which includes byte values in hex, and ASCII output
 
 The configuration options are controlled by an exported package global,
 utter.Config.  See ConfigState for options documentation.
