@@ -79,6 +79,10 @@ func initSpewTests() {
 	comPtrDefault.CommentPointers = true
 
 	// Byte slice with 8 columns.
+	bs0Default := utter.NewDefaultConfig()
+	bs0Default.BytesWidth = 0
+
+	// Byte slice with 8 columns.
 	bs8Default := utter.NewDefaultConfig()
 	bs8Default.BytesWidth = 8
 
@@ -191,6 +195,10 @@ func initSpewTests() {
 			"  int( /*%p*/ 5),\n"+
 			"  (*interface{}) /*%[1]p*/ (<already shown>),\n"+
 			"  &int /*%p*/ (5),\n },\n}\n", &c[0], &c[1])},
+		{bs0Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5}, "[]uint8{\n" +
+			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, // |................|\n" +
+			" 0x05, /*                                                                                     */ // |.|\n}\n",
+		},
 		{bs8Default, fCSFdump, []byte{1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3}, "[]uint8{\n" +
 			" 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, // |........|\n" +
 			" 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, /* */ // |.......|\n}\n",

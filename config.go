@@ -54,7 +54,8 @@ type ConfigState struct {
 	Quoting Quoting
 
 	// BytesWidth specifies the number of byte columns to use when dumping a
-	// byte slice or array.
+	// byte slice or array. If this is not set or negative, a value of 16
+	// is used.
 	BytesWidth int
 
 	// CommentBytes specifies whether byte slice or array dumps have ASCII
